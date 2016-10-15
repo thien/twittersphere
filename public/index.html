@@ -1,52 +1,15 @@
 <html>
 <head>
-<script src="/socket.io/socket.io.js"></script>
 <script src="/three/three.min.js"></script>
-<!-- <script src="/socket.io/socket.io.js"></script> -->
-<script>
-	// initiate socket.io goods
-	var socket = io();
-
-	var clicky_instruction = class {
-	  constructor(inst,val) {
-	    this.instruction = inst;
-	    this.val = val;
-	  }
-	};
-
-	function sendInstruction(inst) {
-		var instructionPackage = JSON.stringify(inst);
-		socket.emit('instruction', instructionPackage);
-	}
-
-	socket.on('query-response', function (response) {
-            console.log("Recieved response, it is ",response);
-    });
-
-    socket.on('tweet_results', function (response) {
-            console.log(response);
-    });
-</script>
 </head>
 <body id="a">
 <h1>coolproject11</h1>
 <p>this is the cool project</p>
-<textarea id="input" columns=40 rows=5>Some text about stuff</textarea>
-<button onClick="analyse()">Analyse</button>
-<br><br>
-
-    <td><button onclick="sendInstruction(new clicky_instruction('CLOCK', 'realdonaldtrump'));" type="button">get trump tweets</button></td>
-  </tr>
+<label>@<input id="twitter" placeholder="username" value="realDonaldTrump"></label>
+<button onClick="process()">Analyse</button>
 <script>
-    function analyse() {
-        var input = document.getElementById("input").innerHTML;
-        socket.emit('query',
-        {
-            "document": {
-                "type":"PLAIN_TEXT",
-                "content": input
-            }
-        });
+    function process() {
+        document.location = document.getElementById("twitter").value;
     }
 </script>
 </body>
