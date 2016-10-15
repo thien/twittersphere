@@ -84,9 +84,9 @@
 			var effectFXAA, bloomPass, renderScene;
 
             var connections = [
-                {"verts": [0, 1], "r": 0, "g": 1, "b": 0, "number": 5},
-                {"verts": [0, 2], "r": 1, "g": 0, "b": 0, "number": 10},
-                {"verts": [0, 3], "r": 0.7, "g": 1, "b": 0, "number": 3}
+                {"verts": [0, 1], "r": 0, "g": 1, "b": 0, "number": 5, "lineObjs": new Array()},
+                {"verts": [0, 2], "r": 1, "g": 0, "b": 0, "number": 10, "lineObjs": new Array()},
+                {"verts": [0, 3], "r": 0.7, "g": 1, "b": 0, "number": 3, "lineObjs": new Array()}
             ]
             LINE_SEP_FAC = 0.5
             var blobs = [
@@ -160,6 +160,7 @@
                 }
 
                 for (var c=0; c<connections.length; c++) {
+                    Math.seed = c;
                     for (var l=0; l<connections[c].number; l++) {
                         var vert0 = blobs[connections[c].verts[0]];
                         var vert1 = blobs[connections[c].verts[1]];
@@ -185,7 +186,9 @@
                         linesGeo.vertices.push({"x": x1, "y": y1, "z": z1});
                         var r = connections[c].r, g = connections[c].g,
                             b = connections[c].b;
-                        scene.add( new THREE.Line( linesGeo, new THREE.LineBasicMaterial( { color: new THREE.Color(r, g, b), opacity: 1 } ) ) );
+                        var lineObj = new THREE.Line( linesGeo, new THREE.LineBasicMaterial( { color: new THREE.Color(r, g, b), opacity: 1 } ) )
+                        scene.add( lineObj );
+                        connections[c].lineObjs.push(lineObj);
                     }
                 }
 
@@ -270,6 +273,7 @@
 			}
 			//
 			function animate() {
+                balanceBlobs();
 				requestAnimationFrame( animate );
 				render();
 				stats.update();
@@ -282,6 +286,97 @@
                 renderer.clear();
                 composer.render(0.05);
 			}
+
+            function updateEdges() {
+                for (var c=0; c<connections.length; c++) {
+                    var con = connections[c];
+                    Math.seed = c;
+                    var vert0 = blobs[con.verts[0]];
+                    var vert1 = blobs[con.verts[1]];
+
+                    for (var l=0; l<con.number; l++) {
+
+                        var theta = Math.seededRandom(0, Math.PI * 2);
+                        var phi = Math.seededRandom(-Math.PI/2, Math.PI/2);
+                        var radius0 = Math.seededRandom(0, vert0.radius);
+                        var radius1 = Math.seededRandom(0, vert1.radius);
+
+
+                        var x0 = LINE_SEP_FAC * radius0 * Math.cos(theta) * Math.cos(phi) + vert0.group.position.x;
+                        var y0 = LINE_SEP_FAC * radius0 * Math.sin(phi) + vert0.group.position.y;
+                        var z0 = LINE_SEP_FAC * radius0 * Math.sin(theta) * Math.cos(phi) + vert0.group.position.z;
+
+                        var x1 = LINE_SEP_FAC * radius1 * Math.cos(theta) * Math.cos(phi) + vert1.group.position.x;
+                        var y1 = LINE_SEP_FAC * radius1 * Math.sin(phi) + vert1.group.position.y;
+                        var z1 = LINE_SEP_FAC * radius1 * Math.sin(theta) * Math.cos(phi) + vert1.group.position.z;
+
+                        connections[c].lineObjs[l].geometry.vertices[0].x = x0;
+                        connections[c].lineObjs[l].geometry.vertices[0].y = y0;
+                        connections[c].lineObjs[l].geometry.vertices[0].z = z0;
+                        connections[c].lineObjs[l].geometry.vertices[1].x = x1;
+                        connections[c].lineObjs[l].geometry.vertices[1].y = y1;
+                        connections[c].lineObjs[l].geometry.vertices[1].z = z1;
+
+                        connections[c].lineObjs[l].geometry.verticesNeedUpdate = true;
+                    }
+                }
+            }
+
+            function balanceBlobs() {
+                for ( var bl=1; bl<blobs.length; bl++ ) {
+                    var mvX = 0, mvY = 0, mvZ = 0;
+                    for ( var away=0; away<blobs.length; away++ ) {
+                        var a = blobs[bl].group.position;
+                        var b = blobs[away].group.position;
+                        var dist = Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2) + Math.pow(a.z - b.z, 2))
+                        var aRad = blobs[bl].radius
+                        var bRad = blobs[away].radius
+                        if (dist == 0) {
+                            mvX += 1;
+                        } else {
+                            if (dist < (aRad + bRad)) {
+                                mvX += ((a.x - b.x) / dist) * (aRad + bRad) * 0.5;
+                                mvY += ((a.y - b.y) / dist) * (aRad + bRad) * 0.5;
+                                mvZ += ((a.z - b.z) / dist) * (aRad + bRad) * 0.5;
+                            } else {
+                                mvX += ((a.x - b.x) / dist) * (aRad + bRad) * 0.5 * (1/dist);
+                                mvY += ((a.y - b.y) / dist) * (aRad + bRad) * 0.5 * (1/dist);
+                                mvZ += ((a.z - b.z) / dist) * (aRad + bRad) * 0.5 * (1/dist);
+                            }
+                        }
+                        if (away+1 == bl) {
+                            away++;
+                        }
+                    }
+                    blobs[bl].group.position.x += mvX;
+                    blobs[bl].group.position.y += mvY;
+                    blobs[bl].group.position.z += mvZ;
+                }
+                for ( var c=0; c<connections.length; c++ ) {
+                    var aBlob = blobs[connections[c].verts[0]];
+                    var bBlob = blobs[connections[c].verts[1]];
+                    var a = aBlob.group.position;
+                    var b = bBlob.group.position;
+                    var dist = Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2) + Math.pow(a.z - b.z, 2))
+                    var dFac = dist - 2 * (aBlob.radius + bBlob.radius)
+                    if (dFac > 0) {
+                        var adjust = dFac / dist
+                        mvX = adjust * (a.x - b.x);
+                        mvY = adjust * (a.y - b.y);
+                        mvZ = adjust * (a.z - b.z);
+                        aBlob.group.position.x -= mvX;
+                        aBlob.group.position.y -= mvY;
+                        aBlob.group.position.z -= mvZ;
+                        bBlob.group.position.x += mvX;
+                        bBlob.group.position.y += mvY;
+                        bBlob.group.position.z += mvZ;
+                    }
+                }
+                blobs[0].group.position.x = 0;
+                blobs[0].group.position.y = 0;
+                blobs[0].group.position.z = 0;
+                updateEdges();
+            }
 		</script>
 
 	</body>
