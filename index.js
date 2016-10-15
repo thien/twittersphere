@@ -31,12 +31,11 @@ function getTweets(user,socket){
     twit.get('statuses/user_timeline', params, function(error, tweets, response) {
         if (!error) {
             // return tweet_texts;
-            var sentiments;
             for (var i = 0; i < tweets.length; i++) {
                 var tweet = tweets[i].text;
                 socket.emit('tweet', tweets[i].text)
                 language.detectSentiment(tweets[i].text,function(err,sentiment,apiResponse) {
-                        console.log(sentiment);
+                	console.log(sentiment);
                         socket.emit('sentiment', sentiment)
                 });
             }

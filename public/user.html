@@ -3,22 +3,67 @@
         <title>CoolProject11</title>
         <script src="/socket.io/socket.io.js"></script>
         <script src="/three/three.min.js"></script>
+
+        <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
         <script>
             var socket = io();
+            var tweets = [];
+            var sentiment = [];
             // var myVar = <%- passValue(myVar) %>
+            // var results = [[]];
             socket.on('tweet', function (response) {
-                console.log(response);
+                // console.log(response);
+                tweets.push(response);
+                // drawtable1(response);
             });
             socket.on('sentiment', function (response) {
-                console.log(response);
+                // console.log(response);
+                sentiment.push(response);
+                // console.log(tweets);
+                // console.log(sentiment);
+                if (sentiment.length > 25){
+                    drawtable();
+                }
             });
+
         </script>
     </head>
     <body>
         <h1 id=""></h1>
         <p>Here are all the recent tweets from this user, along with a sentiment value from 0-100</p>
+<div width="500px">
+<table class="table" id="table" width="1000px" align="right">
+          <tr>
+            <th>Tweet</th>
+             <th>sentiment</th>
+          </tr>
+          <tr>
+          </tr>
+        </table>
+        </div>
     <script>
         socket.emit('interrogate', window.location.pathname.substr(1,window.location.pathname.length-1));
+
+
+
+            function drawtable() {
+        // $("#table").find("tr:gt(0)").remove();
+        for (i = 0; i < 30; i++) {
+            console.log(i);
+            console.log(tweets[i]);
+            console.log(sentiment[i]);
+        };
+            $("#table").find('tbody')
+            .append($('<tr>'))
+            .append($('<td>'))
+            .append($('<tr>').text(tweets[i]))
+            .append($('<tr>').text(sentiment[i]))
+};
+// }
+    // socket.on('board-update', function(jsonData){
+    //   updateGameState(jsonData);
+    //   drawtable(jsonData);
+    // });
     </script>
     </body>
 </html>
