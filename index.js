@@ -26,7 +26,7 @@ var twit = new twitter(st.s());
 
 
 //getting tweets from a twitter user
-function getTweets(user){
+function getTweets(user,socket){
 	var params = {screen_name: user, count: 30, include_rts: 'false'};
 	twit.get('statuses/user_timeline', params, function(error, tweets, response) {
 		var tweet_texts = []; //array containing the
@@ -45,10 +45,10 @@ function getTweets(user){
 			var sentiments;
 		    for (var i = 0; i < tweet_texts.length; i++) {
 		    	var tweeter = tweets[i].text;
-					console.log(tweeter);
-			        language.detectSentiment(tweeter,function(err,sentiment,apiResponse) {
-			            console.log(sentiment);
-			        });
+                        socket.emit('tweet', {tweet})
+                        language.detectSentiment(tweeter,function(err,sentiment,apiResponse) {
+                            socket.emit('sentiment', {sentiment})
+                        });
 		    }
 		}
 	});
@@ -79,7 +79,7 @@ io.on('connection', function (socket) {
         console.log('client ' + socket.id + ' has dropped the server');
     });
     socket.on('interrogate', function(username) {
-        getTweets(username);
+        getTweets(username,socket);
     });
 });
 
