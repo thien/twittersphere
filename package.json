@@ -32,6 +32,7 @@
   "dependencies": {
     "express": "^4.14.0",
     "socketio": "^1.0.0",
-    "three": "^0.81.2"
+    "three": "^0.81.2",
+    "twitter": "^1.4.0"
   }
 }
