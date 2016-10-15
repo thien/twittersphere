@@ -150,10 +150,13 @@
         addTweet(ba, bd, 1, 70);
         addTweet(ba, bd, 1, 99);
 
+        var dataInited = false;
+
         LINE_SEP_FAC = 0.5;
 
 	    init();
 	    animate();
+        //initWithData();
 	    function init() {
 	        container = document.getElementById( 'container' );
 	        camera = new THREE.PerspectiveCamera( 20, window.innerWidth / window.innerHeight, 1, 10000 );
@@ -174,68 +177,6 @@
 
 	        for (var i=0; i<blobs.length; i++) {
 	            blobs[i].geo = new THREE.IcosahedronGeometry(blobs[i].radius, 1);
-	        }
-
-	        var faceIndices = [ 'a', 'b', 'c' ];
-	        var color, p, vertexIndex;
-
-	        for (var b=0; b<blobs.length; b++) {
-	            for (var f=0; f<blobs[b].geo.faces.length; f++) {
-	                for (var v=0; v<3; v++) {
-	                    vertexIndex = blobs[b].geo.faces[f][faceIndices[v]];
-	                    p = blobs[b].geo.vertices[vertexIndex];
-	                    color = getColourFromSentiment(blobs[b].polarity, blobs[b].magnitude);
-	                    //color.setHSL( 0.125 * vertexIndex/blobs[b].geo.vertices.length, 1.0, 0.5 );
-	                    blobs[b].geo.faces[f].vertexColors[v] = color;
-	                }
-	            }
-	        }
-	        var materials = [
-	            new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading, vertexColors: THREE.VertexColors, shininess: 0 } ),
-	            new THREE.MeshBasicMaterial( { color: 0x000000, shading: THREE.FlatShading, wireframe: true, transparent: true } )
-	        ];
-
-	        for (var g=0; g<blobs.length; g++) {
-	            group = THREE.SceneUtils.createMultiMaterialObject(blobs[g].geo, materials);
-	            group.position.x = blobs[g].pos[0];
-	            group.position.y = blobs[g].pos[1];
-	            group.position.z = blobs[g].pos[2];
-	            //group.rotation.x = ...
-	            blobs[g].group = group;
-	            scene.add(group);
-	        }
-
-	        for (var c = 0; c < connections.length; c++) {
-                Math.seed = c;
-                for (var l = 0; l < connections[c].tweets.length; l++) {
-	                var vert0 = blobs[connections[c].verts[0]];
-	                var vert1 = blobs[connections[c].verts[1]];
-
-	                var linesGeo = new THREE.Geometry();
-
-	                var theta = Math.seededRandom(0, Math.PI * 2);
-	                var phi = Math.seededRandom(-Math.PI/2, Math.PI/2);
-	                var radius0 = Math.seededRandom(0, vert0.radius);
-	                var radius1 = Math.seededRandom(0, vert1.radius);
-
-	                var x0 = LINE_SEP_FAC * radius0 * Math.cos(theta) * Math.cos(phi) + vert0.group.position.x;
-	                var y0 = LINE_SEP_FAC * radius0 * Math.sin(phi) + vert0.group.position.y;
-	                var z0 = LINE_SEP_FAC * radius0 * Math.sin(theta) * Math.cos(phi) + vert0.group.position.z;
-
-	                var x1 = LINE_SEP_FAC * radius1 * Math.cos(theta) * Math.cos(phi) + vert1.group.position.x;
-	                var y1 = LINE_SEP_FAC * radius1 * Math.sin(phi) + vert1.group.position.y;
-	                var z1 = LINE_SEP_FAC * radius1 * Math.sin(theta) * Math.cos(phi) + vert1.group.position.z;
-
-	                //linesGeo.vertices.push(vert0.group.position);
-	                linesGeo.vertices.push({"x": x0, "y": y0, "z": z0});
-	                //linesGeo.vertices.push(vert1.group.position);
-	                linesGeo.vertices.push({ "x": x1, "y": y1, "z": z1 });
-	                var edgeColor;
-	                edgeColor = getColourFromSentiment(connections[c].tweets[l].polarity, connections[c].tweets[l].magnitude);
-                    var lineObj = new THREE.Line( linesGeo, new THREE.LineBasicMaterial( { color: new THREE.Color(edgeColor.r, edgeColor.g, edgeColor.b), opacity: 1 } ) )
-	                scene.add( lineObj );
-                    connections[c].lineObjs.push(lineObj);
-	            }
 	        }
 
 	        var SEPX = 120, AMOUNTX = 10;
@@ -301,6 +242,73 @@
 	        //
 	        window.addEventListener( 'resize', onWindowResize, false );
 	    }
+
+        function initWithData() {
+            dataInited = true;
+
+	        var faceIndices = [ 'a', 'b', 'c' ];
+	        var color, p, vertexIndex;
+
+	        for (var b=0; b<blobs.length; b++) {
+	            for (var f=0; f<blobs[b].geo.faces.length; f++) {
+	                for (var v=0; v<3; v++) {
+	                    vertexIndex = blobs[b].geo.faces[f][faceIndices[v]];
+	                    p = blobs[b].geo.vertices[vertexIndex];
+	                    color = getColourFromSentiment(blobs[b].polarity, blobs[b].magnitude);
+	                    //color.setHSL( 0.125 * vertexIndex/blobs[b].geo.vertices.length, 1.0, 0.5 );
+	                    blobs[b].geo.faces[f].vertexColors[v] = color;
+	                }
+	            }
+	        }
+	        var materials = [
+	            new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading, vertexColors: THREE.VertexColors, shininess: 0 } ),
+	            new THREE.MeshBasicMaterial( { color: 0x000000, shading: THREE.FlatShading, wireframe: true, transparent: true } )
+	        ];
+
+	        for (var g=0; g<blobs.length; g++) {
+	            group = THREE.SceneUtils.createMultiMaterialObject(blobs[g].geo, materials);
+	            group.position.x = blobs[g].pos[0];
+	            group.position.y = blobs[g].pos[1];
+	            group.position.z = blobs[g].pos[2];
+	            //group.rotation.x = ...
+	            blobs[g].group = group;
+	            scene.add(group);
+	        }
+
+	        for (var c = 0; c < connections.length; c++) {
+                Math.seed = c;
+                for (var l = 0; l < connections[c].tweets.length; l++) {
+	                var vert0 = blobs[connections[c].verts[0]];
+	                var vert1 = blobs[connections[c].verts[1]];
+
+	                var linesGeo = new THREE.Geometry();
+
+	                var theta = Math.seededRandom(0, Math.PI * 2);
+	                var phi = Math.seededRandom(-Math.PI/2, Math.PI/2);
+	                var radius0 = Math.seededRandom(0, vert0.radius);
+	                var radius1 = Math.seededRandom(0, vert1.radius);
+
+	                var x0 = LINE_SEP_FAC * radius0 * Math.cos(theta) * Math.cos(phi) + vert0.group.position.x;
+	                var y0 = LINE_SEP_FAC * radius0 * Math.sin(phi) + vert0.group.position.y;
+	                var z0 = LINE_SEP_FAC * radius0 * Math.sin(theta) * Math.cos(phi) + vert0.group.position.z;
+
+	                var x1 = LINE_SEP_FAC * radius1 * Math.cos(theta) * Math.cos(phi) + vert1.group.position.x;
+	                var y1 = LINE_SEP_FAC * radius1 * Math.sin(phi) + vert1.group.position.y;
+	                var z1 = LINE_SEP_FAC * radius1 * Math.sin(theta) * Math.cos(phi) + vert1.group.position.z;
+
+	                //linesGeo.vertices.push(vert0.group.position);
+	                linesGeo.vertices.push({"x": x0, "y": y0, "z": z0});
+	                //linesGeo.vertices.push(vert1.group.position);
+	                linesGeo.vertices.push({ "x": x1, "y": y1, "z": z1 });
+	                var edgeColor;
+	                edgeColor = getColourFromSentiment(connections[c].tweets[l].polarity, connections[c].tweets[l].magnitude);
+                    var lineObj = new THREE.Line( linesGeo, new THREE.LineBasicMaterial( { color: new THREE.Color(edgeColor.r, edgeColor.g, edgeColor.b), opacity: 1 } ) )
+	                scene.add( lineObj );
+                    connections[c].lineObjs.push(lineObj);
+	            }
+	        }
+        }
+
 	    function onWindowResize() {
 	        windowHalfX = window.innerWidth / 2;
 	        windowHalfY = window.innerHeight / 2;
@@ -320,7 +328,9 @@
 	    }
 	    //
 	    function animate() {
-            balanceBlobs();
+            if (dataInited) {
+                balanceBlobs();
+            }
 	        requestAnimationFrame( animate );
 	        render();
 	        stats.update();
