@@ -12,15 +12,13 @@
             socket.on('sentiment', function (response) {
                 console.log(response);
             });
-
-            $(document).ready(function() {
-                socket.emit('interrogate', window.location.pathname);
-            });
         </script>
     </head>
     <body>
         <h1 id=""></h1>
         <p>Here are all the recent tweets from this user, along with a sentiment value from 0-100</p>
-
+    <script>
+        socket.emit('interrogate', window.location.pathname);
+    </script>
     </body>
 </html>

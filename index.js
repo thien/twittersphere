@@ -59,7 +59,7 @@ app.get("/", function(req, res) {
 });
 
 app.get("/([a-zA-Z0-9]*)", function(req, res) {
-	res.sendFile("user.html");
+	res.sendFile(__dirname+"/public/user.html");
 });
 
 http.listen(port, function(){
