@@ -47,250 +47,261 @@
 		<script src="js/postprocessing/FilmPass.js"></script>
 		<script src="js/postprocessing/UnrealBloomPass.js"></script>
 
-		<script>
-            // the initial seed
-            Math.seed = 6;
+	<script>
+        
+	    // the initial seed
+	    Math.seed = 6;
 
-            // in order to work 'Math.seed' must NOT be undefined,
-            // so in any case, you HAVE to provide a Math.seed
-            Math.seededRandom = function(max, min) {
-                max = max || 1;
-                min = min || 0;
+	    // in order to work 'Math.seed' must NOT be undefined,
+	    // so in any case, you HAVE to provide a Math.seed
+	    Math.seededRandom = function(max, min) {
+	        max = max || 1;
+	        min = min || 0;
 
-                Math.seed = (Math.seed * 9301 + 49297) % 233280;
-                var rnd = Math.seed / 233280;
+	        Math.seed = (Math.seed * 9301 + 49297) % 233280;
+	        var rnd = Math.seed / 233280;
 
-                return min + rnd * (max - min);
-            }
+	        return min + rnd * (max - min);
+	    }
 
-			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
-			var container, stats;
-			var camera, scene, renderer;
-			var mesh, group1, group2, group3, light;
-			var raycaster, intersects;
-			var mouse, INTERSECTED;
-			var windowHalfX = window.innerWidth / 2;
-			var windowHalfY = window.innerHeight / 2;
+	    if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+	    var container, stats;
+	    var camera, scene, renderer;
+	    var mesh, group1, group2, group3, light;
+	    var raycaster, intersects;
+	    var mouse, INTERSECTED;
+	    var windowHalfX = window.innerWidth / 2;
+	    var windowHalfY = window.innerHeight / 2;
 
-            var effectFocus, composer;
-			var params = {
-				projection: 'normal',
-				background: false,
-				exposure: 1.0,
-				bloomStrength: 1.5,
-				bloomThreshold: 0.85,
-				bloomRadius: 0.4
-			};
-			var effectFXAA, bloomPass, renderScene;
+	    var effectFocus, composer;
+	    var params = {
+	        projection: 'normal',
+	        background: false,
+	        exposure: 1.0,
+	        bloomStrength: 1.5,
+	        bloomThreshold: 0.85,
+	        bloomRadius: 0.4
+	    };
+	    var effectFXAA, bloomPass, renderScene;
 
-            var connections = [
-                { "verts": [0, 1], "r": 0, "g": 1, "b": 0, "number": 5 },
-                { "verts": [0, 2], "r": 1, "g": 0, "b": 0, "number": 10 },
-                { "verts": [0, 3], "r": 0.7, "g": 1, "b": 0, "number": 3 }
-            ];
-            LINE_SEP_FAC = 0.5
-            var blobs = [
-                { "pos": [0, 0, 0], "radius": 70, "sentiment": 1, "sentimentRange": 0 , "magnitude": 90},
-                { "pos": [-200, 0, 0], "radius": 40, "sentiment": 1, "sentimentRange": 1, "magnitude": 20 },
-                { "pos": [200, 0, 0], "radius": 55, "sentiment": -1, "sentimentRange": 0, "magnitude": 30 },
-                { "pos": [0, 200, 0], "radius": 45, "sentiment": -1, "sentimentRange": 1, "magnitude": 60 }
-            ];
+	    var connections = [
+	        { "verts": [0, 1], "tweets": [{"sentiment": 1, "magnitude": 30}, {"sentiment": 1, "magnitude": 70}, {"sentiment": -1, "magnitude": 99}]},
+	        { "verts": [0, 2], "tweets": [{ "sentiment": 1, "magnitude": 30 }, { "sentiment": 1, "magnitude": 70 }, { "sentiment": -1, "magnitude": 99 }]},
+	        { "verts": [0, 3], "tweets": [{ "sentiment": 1, "magnitude": 30 }, { "sentiment": 1, "magnitude": 70 }, { "sentiment": -1, "magnitude": 99 }]}
+	    ];
+	    LINE_SEP_FAC = 0.5;
+	    var blobs = [
+	        { "pos": [0, 0, 0], "radius": 70, "sentiment": 1, "sentimentRange": 0 , "magnitude": 90},
+	        { "pos": [-200, 0, 0], "radius": 40, "sentiment": 1, "sentimentRange": 1, "magnitude": 20 },
+	        { "pos": [200, 0, 0], "radius": 55, "sentiment": -1, "sentimentRange": 0, "magnitude": 30 },
+	        { "pos": [0, 200, 0], "radius": 45, "sentiment": -1, "sentimentRange": 1, "magnitude": 60 }
+	    ];
 
-			init();
-			animate();
-			function init() {
-				container = document.getElementById( 'container' );
-				camera = new THREE.PerspectiveCamera( 20, window.innerWidth / window.innerHeight, 1, 10000 );
+	    init();
+	    animate();
+	    function init() {
+	        container = document.getElementById( 'container' );
+	        camera = new THREE.PerspectiveCamera( 20, window.innerWidth / window.innerHeight, 1, 10000 );
 
-				mouse = new THREE.Vector2();
+	        mouse = new THREE.Vector2();
 
-                camera.position.y = 50;
-                camera.position.z = 1800;
+	        camera.position.y = 50;
+	        camera.position.z = 1800;
 
-				scene = new THREE.Scene();
-				light = new THREE.DirectionalLight( 0xffffff );
-				light.position.set( 0, 0, 1 );
-				scene.add( light );
-				// shadow
-				var canvas = document.createElement( 'canvas' );
-				canvas.width = 128;
-				canvas.height = 128;
+	        scene = new THREE.Scene();
+	        light = new THREE.DirectionalLight( 0xffffff );
+	        light.position.set( 0, 0, 1 );
+	        scene.add( light );
+	        // shadow
+	        var canvas = document.createElement( 'canvas' );
+	        canvas.width = 128;
+	        canvas.height = 128;
 
-                for (var i=0; i<blobs.length; i++) {
-                    blobs[i].geo = new THREE.IcosahedronGeometry(blobs[i].radius, 1);
-                }
+	        for (var i=0; i<blobs.length; i++) {
+	            blobs[i].geo = new THREE.IcosahedronGeometry(blobs[i].radius, 1);
+	        }
 
-				var faceIndices = [ 'a', 'b', 'c' ];
-				var color, p, vertexIndex;
+	        var faceIndices = [ 'a', 'b', 'c' ];
+	        var color, p, vertexIndex;
 
-                for (var b=0; b<blobs.length; b++) {
-                    for (var f=0; f<blobs[b].geo.faces.length; f++) {
-                        for (var v=0; v<3; v++) {
-                            vertexIndex = blobs[b].geo.faces[f][faceIndices[v]];
-                            p = blobs[b].geo.vertices[vertexIndex];
-                            color = getColourFromSentiment(blobs[b].sentiment, blobs[b].magnitude);
-    						//color.setHSL( 0.125 * vertexIndex/blobs[b].geo.vertices.length, 1.0, 0.5 );
-    						blobs[b].geo.faces[f].vertexColors[v] = color;
-                        }
-                    }
-                }
-				var materials = [
-					new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading, vertexColors: THREE.VertexColors, shininess: 0 } ),
-					new THREE.MeshBasicMaterial( { color: 0x000000, shading: THREE.FlatShading, wireframe: true, transparent: true } )
-				];
+	        for (var b=0; b<blobs.length; b++) {
+	            for (var f=0; f<blobs[b].geo.faces.length; f++) {
+	                for (var v=0; v<3; v++) {
+	                    vertexIndex = blobs[b].geo.faces[f][faceIndices[v]];
+	                    p = blobs[b].geo.vertices[vertexIndex];
+	                    color = getColourFromSentiment(blobs[b].sentiment, blobs[b].magnitude);
+	                    //color.setHSL( 0.125 * vertexIndex/blobs[b].geo.vertices.length, 1.0, 0.5 );
+	                    blobs[b].geo.faces[f].vertexColors[v] = color;
+	                }
+	            }
+	        }
+	        var materials = [
+	            new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading, vertexColors: THREE.VertexColors, shininess: 0 } ),
+	            new THREE.MeshBasicMaterial( { color: 0x000000, shading: THREE.FlatShading, wireframe: true, transparent: true } )
+	        ];
 
-                for (var g=0; g<blobs.length; g++) {
-                    group = THREE.SceneUtils.createMultiMaterialObject(blobs[g].geo, materials);
-                    group.position.x = blobs[g].pos[0];
-                    group.position.y = blobs[g].pos[1];
-                    group.position.z = blobs[g].pos[2];
-                    //group.rotation.x = ...
-                    blobs[g].group = group;
-                    scene.add(group);
-                }
+	        for (var g=0; g<blobs.length; g++) {
+	            group = THREE.SceneUtils.createMultiMaterialObject(blobs[g].geo, materials);
+	            group.position.x = blobs[g].pos[0];
+	            group.position.y = blobs[g].pos[1];
+	            group.position.z = blobs[g].pos[2];
+	            //group.rotation.x = ...
+	            blobs[g].group = group;
+	            scene.add(group);
+	        }
 
-                for (var c=0; c<connections.length; c++) {
-                    for (var l=0; l<connections[c].number; l++) {
-                        var vert0 = blobs[connections[c].verts[0]];
-                        var vert1 = blobs[connections[c].verts[1]];
+	        for (var c = 0; c < connections.length; c++) {
+	            console.log("c = " + c);
+	            console.log("Connection.c = " + connections[c]);
+                for (var l = 0; l < connections[c].tweets.length; l++) {
+                    console.log("l = " + l);
+	                var vert0 = blobs[connections[c].verts[0]];
+	                var vert1 = blobs[connections[c].verts[1]];
 
-                        var linesGeo = new THREE.Geometry();
+	                var linesGeo = new THREE.Geometry();
 
-                        var theta = Math.seededRandom(0, Math.PI * 2);
-                        var phi = Math.seededRandom(-Math.PI/2, Math.PI/2);
-                        var radius0 = Math.seededRandom(0, vert0.radius);
-                        var radius1 = Math.seededRandom(0, vert1.radius);
+	                var theta = Math.seededRandom(0, Math.PI * 2);
+	                var phi = Math.seededRandom(-Math.PI/2, Math.PI/2);
+	                var radius0 = Math.seededRandom(0, vert0.radius);
+	                var radius1 = Math.seededRandom(0, vert1.radius);
 
-                        var x0 = LINE_SEP_FAC * radius0 * Math.cos(theta) * Math.cos(phi) + vert0.group.position.x;
-                        var y0 = LINE_SEP_FAC * radius0 * Math.sin(phi) + vert0.group.position.y;
-                        var z0 = LINE_SEP_FAC * radius0 * Math.sin(theta) * Math.cos(phi) + vert0.group.position.z;
+	                var x0 = LINE_SEP_FAC * radius0 * Math.cos(theta) * Math.cos(phi) + vert0.group.position.x;
+	                var y0 = LINE_SEP_FAC * radius0 * Math.sin(phi) + vert0.group.position.y;
+	                var z0 = LINE_SEP_FAC * radius0 * Math.sin(theta) * Math.cos(phi) + vert0.group.position.z;
 
-                        var x1 = LINE_SEP_FAC * radius1 * Math.cos(theta) * Math.cos(phi) + vert1.group.position.x;
-                        var y1 = LINE_SEP_FAC * radius1 * Math.sin(phi) + vert1.group.position.y;
-                        var z1 = LINE_SEP_FAC * radius1 * Math.sin(theta) * Math.cos(phi) + vert1.group.position.z;
+	                var x1 = LINE_SEP_FAC * radius1 * Math.cos(theta) * Math.cos(phi) + vert1.group.position.x;
+	                var y1 = LINE_SEP_FAC * radius1 * Math.sin(phi) + vert1.group.position.y;
+	                var z1 = LINE_SEP_FAC * radius1 * Math.sin(theta) * Math.cos(phi) + vert1.group.position.z;
 
-                        //linesGeo.vertices.push(vert0.group.position);
-                        linesGeo.vertices.push({"x": x0, "y": y0, "z": z0});
-                        //linesGeo.vertices.push(vert1.group.position);
-                        linesGeo.vertices.push({"x": x1, "y": y1, "z": z1});
-                        var r = connections[c].r, g = connections[c].g,
-                            b = connections[c].b;
-                        scene.add( new THREE.Line( linesGeo, new THREE.LineBasicMaterial( { color: new THREE.Color(r, g, b), opacity: 1 } ) ) );
-                    }
-                }
+	                //linesGeo.vertices.push(vert0.group.position);
+	                linesGeo.vertices.push({"x": x0, "y": y0, "z": z0});
+	                //linesGeo.vertices.push(vert1.group.position);
+	                linesGeo.vertices.push({ "x": x1, "y": y1, "z": z1 });
+	                var edgeColor;
+	                console.log("sentiment = " + connections[c].tweets[l].sentiment);
+                    console.log("magnitude = " + connections[c].tweets[l].magnitude);
+	                edgeColor = getColourFromSentiment(connections[c].tweets[l].sentiment, connections[c].tweets[l].magnitude);
+	                scene.add( new THREE.Line( linesGeo, new THREE.LineBasicMaterial( { color: new THREE.Color(edgeColor.r, edgeColor.g, edgeColor.b), opacity: 1 } ) ) );
+	            }
+	        }
 
-			    var SEPX = 120, AMOUNTX = 10;
-                var SEPY = 120, AMOUNTY = 10;
-                var SEPZ = 240, AMOUNTZ = 20, ZOFFSET = -1100;
+	        var SEPX = 120, AMOUNTX = 10;
+	        var SEPY = 120, AMOUNTY = 10;
+	        var SEPZ = 240, AMOUNTZ = 20, ZOFFSET = -1100;
 
-                parent = new THREE.Object3D();
-                scene.add(parent);
+	        parent = new THREE.Object3D();
+	        scene.add(parent);
 
-                geo = new THREE.Geometry();
+	        geo = new THREE.Geometry();
 
-				var i = 0;
-				for ( var ix = 0; ix < AMOUNTX; ix ++ ) {
-					for ( var iy = 0; iy < AMOUNTY; iy ++ ) {
-                        for ( var iz = 0; iz < AMOUNTZ; iz++) {
-    						var x = ix * SEPX - ( ( AMOUNTX * SEPX ) / 2 );
-                            var y = iy * SEPY - ( ( AMOUNTY * SEPY ) / 2 );
-    						var z = iz * SEPZ - ( ( AMOUNTZ * SEPZ ) / 2 ) + ZOFFSET;
-                            geo.vertices.push(new THREE.Vector3(x, y, z));
-                        }
-					}
-				}
-                mesh = new THREE.Points(geo, new THREE.PointsMaterial( {size: 3, color: {r: 1, g: 0, b: 0}}));
-                parent.add(mesh);
+	        var i = 0;
+	        for ( var ix = 0; ix < AMOUNTX; ix ++ ) {
+	            for ( var iy = 0; iy < AMOUNTY; iy ++ ) {
+	                for ( var iz = 0; iz < AMOUNTZ; iz++) {
+	                    var x = ix * SEPX - ( ( AMOUNTX * SEPX ) / 2 );
+	                    var y = iy * SEPY - ( ( AMOUNTY * SEPY ) / 2 );
+	                    var z = iz * SEPZ - ( ( AMOUNTZ * SEPZ ) / 2 ) + ZOFFSET;
+	                    geo.vertices.push(new THREE.Vector3(x, y, z));
+	                }
+	            }
+	        }
+	        mesh = new THREE.Points(geo, new THREE.PointsMaterial( {size: 3, color: {r: 1, g: 0, b: 0}}));
+	        parent.add(mesh);
 
-				scene.fog = new THREE.FogExp2( 0x000000, 0.00035 );
+	        scene.fog = new THREE.FogExp2( 0x000000, 0.00035 );
 
-				renderer = new THREE.WebGLRenderer( { antialias: true } );
-				renderer.setClearColor( scene.fog.color );
-				renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize( window.innerWidth, window.innerHeight );
-                renderer.autoClear = false;
-                renderer.sortObjects = false;
-				container.appendChild( renderer.domElement );
-				stats = new Stats();
-				container.appendChild( stats.dom );
+	        renderer = new THREE.WebGLRenderer( { antialias: true } );
+	        renderer.setClearColor( scene.fog.color );
+	        renderer.setPixelRatio( window.devicePixelRatio );
+	        renderer.setSize( window.innerWidth, window.innerHeight );
+	        renderer.autoClear = false;
+	        renderer.sortObjects = false;
+	        container.appendChild( renderer.domElement );
+	        stats = new Stats();
+	        container.appendChild( stats.dom );
 
-                //bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);//1.0, 9, 0.5, 512);
-                composer = new THREE.EffectComposer(renderer);
+	        //bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);//1.0, 9, 0.5, 512);
+	        composer = new THREE.EffectComposer(renderer);
 
-                var renderModel = new THREE.RenderPass(scene, camera);
+	        var renderModel = new THREE.RenderPass(scene, camera);
 
-                var copyPass = new THREE.ShaderPass(THREE.CopyShader);
-                copyPass.renderToScreen = true;
+	        var copyPass = new THREE.ShaderPass(THREE.CopyShader);
+	        copyPass.renderToScreen = true;
 
-                var effectBloom = new THREE.BloomPass(3, 15, 10,1024);
+	        var effectBloom = new THREE.BloomPass(3, 15, 10,1024);
 
-                /*effectFocus = new THREE.ShaderPass(THREE.FocusShader);
-                effectFocus.uniforms["screenWidth"].value = window.innerWidth;
-                effectFocus.uniforms["screenHeight"].value = window.innerHeight;
-                effectFocus.renderToScreen = true;*/
+	        /*effectFocus = new THREE.ShaderPass(THREE.FocusShader);
+            effectFocus.uniforms["screenWidth"].value = window.innerWidth;
+            effectFocus.uniforms["screenHeight"].value = window.innerHeight;
+            effectFocus.renderToScreen = true;*/
 
-                composer = new THREE.EffectComposer(renderer);
+	        composer = new THREE.EffectComposer(renderer);
 
-                composer.addPass(renderModel);
-                composer.addPass(effectBloom);
-                //composer.addPass(bloomPass);
-                //composer.addPass(effectFocus);
+	        composer.addPass(renderModel);
+	        composer.addPass(effectBloom);
+	        //composer.addPass(bloomPass);
+	        //composer.addPass(effectFocus);
 
-                composer.addPass(copyPass);
+	        composer.addPass(copyPass);
 
-				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-				//
-				window.addEventListener( 'resize', onWindowResize, false );
-			}
-			function onWindowResize() {
-				windowHalfX = window.innerWidth / 2;
-				windowHalfY = window.innerHeight / 2;
-				camera.aspect = window.innerWidth / window.innerHeight;
-				camera.updateProjectionMatrix();
-				renderer.setSize( window.innerWidth, window.innerHeight );
-                //composer.setSize( window.innerWidth, window.innerHeight);
-                composer.reset();
-				/*effectFocus.uniforms[ "screenWidth" ].value = window.innerWidth;
-				effectFocus.uniforms[ "screenHeight" ].value = window.innerHeight;
-                */
-			}
-			function onDocumentMouseMove( event ) {
-			    mouse.x = (event.clientX - windowHalfX);
-			    mouse.y = (event.clientY - windowHalfY);
-			}
-			//
-			function animate() {
-				requestAnimationFrame( animate );
-				render();
-				stats.update();
-			}
-			function getColourFromSentiment(sentiment, magnitude) {
-			    //let the limit be +-1. -1 is very bad
-                //internal calculations of sentiment will be 0-1
-			    //colour: {"r": float(0-1), "g": float(0-1), "b": float(0-1)}
-			    var r, g, b;
-                if (sentiment < 0) {
-                    r = 1;
-                    g = 1 - (magnitude * 0.01);
-                    b = 0.3- (0.1 * magnitude);
-                }
-                else {
-                    r = 1 - (magnitude * 0.01);
-                    g = 1;
-                    b = 0.3 - (0.1 * magnitude);
-                }
-			    console.log("Returning this " + r,g,b +"for sentiment " + sentiment);
-			    return { "r": r, "g": g, "b": b };
-			}
-			function render() {
-				camera.position.x += ( mouse.x - camera.position.x ) * 0.05;
-				camera.position.y += ( - mouse.y - camera.position.y ) * 0.05;
-				camera.lookAt( scene.position );
-				//renderer.render( scene, camera );
-                renderer.clear();
-                composer.render(0.05);
-			}
-		</script>
+	        document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+	        //
+	        window.addEventListener( 'resize', onWindowResize, false );
+	    }
+	    function onWindowResize() {
+	        windowHalfX = window.innerWidth / 2;
+	        windowHalfY = window.innerHeight / 2;
+	        camera.aspect = window.innerWidth / window.innerHeight;
+	        camera.updateProjectionMatrix();
+	        renderer.setSize( window.innerWidth, window.innerHeight );
+	        //composer.setSize( window.innerWidth, window.innerHeight);
+	        composer.reset();
+	        /*effectFocus.uniforms[ "screenWidth" ].value = window.innerWidth;
+            effectFocus.uniforms[ "screenHeight" ].value = window.innerHeight;
+            */
+	    }
+			
+	    function onDocumentMouseMove( event ) {
+	        mouse.x = (event.clientX - windowHalfX);
+	        mouse.y = (event.clientY - windowHalfY);
+	    }
+	    //
+	    function animate() {
+	        requestAnimationFrame( animate );
+	        render();
+	        stats.update();
+	    }
+			
+	    function render() {
+	        camera.position.x += ( mouse.x - camera.position.x ) * 0.05;
+	        camera.position.y += ( - mouse.y - camera.position.y ) * 0.05;
+	        camera.lookAt( scene.position );
+	        //renderer.render( scene, camera );
+	        renderer.clear();
+	        composer.render(0.05);
+	    }
+	    function getColourFromSentiment(sentiment, magnitude) {
+	        //let the limit be +-1. -1 is very bad
+	        //internal calculations of sentiment will be 0-1
+	        //colour: {"r": float(0-1), "g": float(0-1), "b": float(0-1)}
+	        var r, g, b;
+	        if (sentiment === 0) {
+	            magnitude = 0;
+	        }
+	        if (sentiment < 0) {
+	            r = 1;
+	            g = 1 - (magnitude * 0.01);
+	            b = 0.3 - (0.1 * magnitude);
+	        }
+	        else {
+	            r = 1 - (magnitude * 0.01);
+	            g = 1;
+	            b = 0.3 - (0.1 * magnitude);
+	        }
+	        console.log("Returning this " + r, g, b + "for sentiment " + sentiment);
+	        return { "r": r, "g": g, "b": b };
+	    }
+	</script>
 
 	</body>
 </html>
