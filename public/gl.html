@@ -32,6 +32,7 @@
 
 		<script src="js/Detector.js"></script>
 		<script src="js/libs/stats.min.js"></script>
+		<script src="js/renderers/CanvasRenderer.js"></script>
 
 		<script>
             // the initial seed
@@ -158,8 +159,29 @@
                     }
                 }
 
+			    var SEPARATION = 100, AMOUNTX = 50, AMOUNTY = 50; YOFFSET = -50
+
+                parent = new THREE.Object3D();
+                scene.add(parent);
+
+                geo = new THREE.Geometry();
+
+				var i = 0;
+				for ( var ix = 0; ix < AMOUNTX; ix ++ ) {
+					for ( var iy = 0; iy < AMOUNTY; iy ++ ) {
+						var x = ix * SEPARATION - ( ( AMOUNTX * SEPARATION ) / 2 );
+                        var y = 0;
+						var z = iy * SEPARATION - ( ( AMOUNTY * SEPARATION ) / 2 ) + YOFFSET;
+                        geo.vertices.push(new THREE.Vector3(x, y, z));
+					}
+				}
+                mesh = new THREE.Points(geo, new THREE.PointsMaterial( {size: 3, color: {r: 1, g: 0, b: 0}}));
+                parent.add(mesh);
+
+				scene.fog = new THREE.FogExp2( 0x000000, 0.0003 );
+
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
-				renderer.setClearColor( 0xffffff );
+				renderer.setClearColor( 0x000000 );
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				container.appendChild( renderer.domElement );
