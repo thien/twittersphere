@@ -1,22 +1,19 @@
 <html>
 <head>
 <script src="/socket.io/socket.io.js"></script>
-<script src="/three/three.min.js"></script>
-<!-- <script src="/socket.io/socket.io.js"></script> -->
-<script>
-	// initiate socket.io goods
-	var socket = io();
-</script>
+<link href="style.css" type="text/css" rel="stylesheet">
+ <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
 </head>
-<body id="a">
-<h1>coolproject11</h1>
-<p>this is the cool project</p>
-<textarea id="input" columns=40 rows=5>Some text about stuff</textarea>
-<button onClick="analyse()">Analyse</button>
-
+<body>
+<div class="formHolder">
+    <h1>CoolProject11</h1>
+    <p>This is the cool project</p>
+    <label>@<input id="input" type="text" placeholder="username"></label>
+    <button onClick="pass()">Analyse</button>
+</div>
 <script>
-    function analyse() {
-
+    function pass() {
+        document.location = document.getElementById("input").value;
     }
 </script>
 </body>
