@@ -43,7 +43,7 @@ function getTweets(user,socket){
         } else {
             console.log(error);
         }
-    });		
+    });
 }
 
 app.get("/", function(req, res) {
@@ -53,6 +53,30 @@ app.get("/", function(req, res) {
 app.get("/([a-zA-Z0-9]*)", function(req, res) {
 	res.sendFile(__dirname+"/public/user.html");
 });
+
+// parameter middleware that will run before the next routes
+app.param('name', function(req, res, next, name) {
+	res.sendFile(__dirname+"/public/user.html");
+    // check if the user with that name exists
+    // do some validations
+    // add -dude to the name
+    // var modified = name + '-dude';
+
+    // save name to the request
+    req.name = name;
+
+    next();
+});
+// http://localhost:8080/chris
+// app.get('/:name', function(req, res) {
+//     // the user was found and is available in req.user
+//     app.locals.title = req.name;
+//     app.set('title', req.name);
+//     res.sendFile(__dirname+"/public/user.html");
+//     res.render('testPage', { name : req.name });
+//     // res.send('What is up ' + req.name + '!');
+// });
+
 
 http.listen(port, function(){
 	console.log("Server up on http://localhost:%s", port);
