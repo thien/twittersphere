@@ -5,7 +5,7 @@
  <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
 </head>
 <body>
-<div class="formHolder">
+<div id="formHolder">
     <h1>CoolProject11</h1>
     <p>This is the cool project</p>
     <label>@<input id="input" type="text" placeholder="username"></label>
@@ -15,6 +15,13 @@
     function pass() {
         document.location = document.getElementById("input").value;
     }
+    var form = document.getElementById("formHolder");
+    form.style.opacity = "0";
+    form.style.marginTop = "100vh";
+    setTimeout(function() {
+        form.style.opacity = "1";
+        form.style.marginTop = "30vh";
+    },200);
 </script>
 </body>
 </html>
