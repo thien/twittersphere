@@ -1,3 +1,4 @@
 node_modules/*
 googlecompute.json
 twitter_key.js
+*.log

@@ -10,22 +10,10 @@ var st = require('./twitter_key.js');
 // load necessary variables for system
 var instructionsStack = [];
 
-fs = require('fs'); //loads file
-
 //initiate express
 app.use(express.static('public'));
 var port = 8080;
 var twit = new twitter(st.s());
-
-class Connection {
-	// var connectionList = [];
-	constructor(socket, id){
-		this.socket = socket;
-		this.id = id;
-		// var openConnections = []; //debatable
-		// var uniqueSocketID = 0; //debatable
-	}
-}
 
 class Connections {
 	constructor(){
@@ -42,10 +30,11 @@ class Connections {
 	}
 	listPlayers(){
 		// bugged
-		// console.log("currently online");
-		// for (i = 0; i < this.player_list.length; i++) {
-		//     console.log(this.player_list[i].id);
-		// }
+
+		console.log("currently online");
+		for (var i = 0; i < this.player_list.length; i++) {
+		    console.log(this.player_list[i].id);
+		}
 	}
 	listPlayersOnline(){
 		io.sockets.emit("players_online", this.noPlayers());
