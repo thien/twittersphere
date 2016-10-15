@@ -25,33 +25,25 @@ var port = 8080;
 var twit = new twitter(st.s());
 
 
-//getting tweets from a twitter user
+//getting tweets and sentiments from a twitter user
 function getTweets(user,socket){
-	var params = {screen_name: user, count: 30, include_rts: 'false'};
-	twit.get('statuses/user_timeline', params, function(error, tweets, response) {
-		var tweet_texts = []; //array containing the
-		if (!error) {
-			for (var i = 0; i < tweets.length; i++) {
-			    // console.log(tweets[i].text); //this gets the results of the tweets
-			    tweet_texts.push(tweets[i].text);
-			}
-		} else {
-			console.log(error);
-			tweet_texts.push(error);
-			tweet_texts.push("found nada");
-		}
-		// return tweet_texts;
-		if (tweet_texts){
-			var sentiments;
-		    for (var i = 0; i < tweet_texts.length; i++) {
-		    	var tweeter = tweets[i].text;
-                        socket.emit('tweet', {tweet})
-                        language.detectSentiment(tweeter,function(err,sentiment,apiResponse) {
-                            socket.emit('sentiment', {sentiment})
-                        });
-		    }
-		}
-	});
+    var params = {screen_name: user, count: 30, include_rts: 'false'};
+    twit.get('statuses/user_timeline', params, function(error, tweets, response) {
+        if (!error) {
+            // return tweet_texts;
+            var sentiments;
+            for (var i = 0; i < tweets.length; i++) {
+                var tweet = tweets[i].text;
+                socket.emit('tweet', tweets[i].text)
+                language.detectSentiment(tweets[i].text,function(err,sentiment,apiResponse) {
+                        console.log(sentiment);
+                        socket.emit('sentiment', sentiment)
+                });
+            }
+        } else {
+            console.log(error);
+        }
+    });		
 }
 
 app.get("/", function(req, res) {

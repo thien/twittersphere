@@ -18,7 +18,7 @@
         <h1 id=""></h1>
         <p>Here are all the recent tweets from this user, along with a sentiment value from 0-100</p>
     <script>
-        socket.emit('interrogate', window.location.pathname);
+        socket.emit('interrogate', window.location.pathname.substr(1,window.location.pathname.length-1));
     </script>
     </body>
 </html>
