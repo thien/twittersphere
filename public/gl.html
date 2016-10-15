@@ -34,6 +34,19 @@
 		<script src="js/libs/stats.min.js"></script>
 		<script src="js/renderers/CanvasRenderer.js"></script>
 
+		<script src="js/shaders/ConvolutionShader.js"></script>
+		<script src="js/shaders/CopyShader.js"></script>
+		<script src="js/shaders/FilmShader.js"></script>
+		<script src="js/shaders/FocusShader.js"></script>
+
+		<script src="js/postprocessing/EffectComposer.js"></script>
+		<script src="js/postprocessing/MaskPass.js"></script>
+		<script src="js/postprocessing/RenderPass.js"></script>
+		<script src="js/postprocessing/BloomPass.js"></script>
+		<script src="js/postprocessing/ShaderPass.js"></script>
+		<script src="js/postprocessing/FilmPass.js"></script>
+		<script src="js/postprocessing/UnrealBloomPass.js"></script>
+
 		<script>
             // the initial seed
             Math.seed = 6;
@@ -59,6 +72,17 @@
 			var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
 
+            var effectFocus, composer;
+			var params = {
+				projection: 'normal',
+				background: false,
+				exposure: 1.0,
+				bloomStrength: 1.5,
+				bloomThreshold: 0.85,
+				bloomRadius: 0.4
+			};
+			var effectFXAA, bloomPass, renderScene;
+
             var connections = [
                 {"verts": [0, 1], "r": 0, "g": 1, "b": 0, "number": 5},
                 {"verts": [0, 2], "r": 1, "g": 0, "b": 0, "number": 10},
@@ -77,8 +101,12 @@
 			function init() {
 				container = document.getElementById( 'container' );
 				camera = new THREE.PerspectiveCamera( 20, window.innerWidth / window.innerHeight, 1, 10000 );
-				camera.position.z = 1800;
+
 				mouse = new THREE.Vector2();
+
+                camera.position.y = 50;
+                camera.position.z = 1800;
+
 				scene = new THREE.Scene();
 				light = new THREE.DirectionalLight( 0xffffff );
 				light.position.set( 0, 0, 1 );
@@ -180,15 +208,42 @@
                 mesh = new THREE.Points(geo, new THREE.PointsMaterial( {size: 3, color: {r: 1, g: 0, b: 0}}));
                 parent.add(mesh);
 
-				scene.fog = new THREE.FogExp2( 0x000000, 0.0003 );
+				scene.fog = new THREE.FogExp2( 0x000000, 0.00035 );
 
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
-				renderer.setClearColor( 0x000000 );
+				renderer.setClearColor( scene.fog.color );
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
+                renderer.autoClear = false;
+                renderer.sortObjects = false;
 				container.appendChild( renderer.domElement );
 				stats = new Stats();
 				container.appendChild( stats.dom );
+
+                //bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);//1.0, 9, 0.5, 512);
+                composer = new THREE.EffectComposer(renderer);
+
+                var renderModel = new THREE.RenderPass(scene, camera);
+
+                var copyPass = new THREE.ShaderPass(THREE.CopyShader);
+                copyPass.renderToScreen = true;
+
+                var effectBloom = new THREE.BloomPass(3, 15, 10,1024);
+
+                /*effectFocus = new THREE.ShaderPass(THREE.FocusShader);
+                effectFocus.uniforms["screenWidth"].value = window.innerWidth;
+                effectFocus.uniforms["screenHeight"].value = window.innerHeight;
+                effectFocus.renderToScreen = true;*/
+
+                composer = new THREE.EffectComposer(renderer);
+
+                composer.addPass(renderModel);
+                composer.addPass(effectBloom);
+                //composer.addPass(bloomPass);
+                //composer.addPass(effectFocus);
+
+                composer.addPass(copyPass);
+
 				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 				//
 				window.addEventListener( 'resize', onWindowResize, false );
@@ -199,6 +254,11 @@
 				camera.aspect = window.innerWidth / window.innerHeight;
 				camera.updateProjectionMatrix();
 				renderer.setSize( window.innerWidth, window.innerHeight );
+                //composer.setSize( window.innerWidth, window.innerHeight);
+                composer.reset();
+				/*effectFocus.uniforms[ "screenWidth" ].value = window.innerWidth;
+				effectFocus.uniforms[ "screenHeight" ].value = window.innerHeight;
+                */
 			}
 			function onDocumentMouseMove( event ) {
 			    mouse.x = (event.clientX - windowHalfX);
@@ -214,7 +274,9 @@
 				camera.position.x += ( mouse.x - camera.position.x ) * 0.05;
 				camera.position.y += ( - mouse.y - camera.position.y ) * 0.05;
 				camera.lookAt( scene.position );
-				renderer.render( scene, camera );
+				//renderer.render( scene, camera );
+                renderer.clear();
+                composer.render(0.05);
 			}
 		</script>
 
