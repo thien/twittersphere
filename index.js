@@ -15,3 +15,11 @@ app.get("/", function(req, res) {
 http.listen(port, function(){
 	console.log("Server up on http://localhost:%s", port);
 });
+
+io.on('connection', function (socket) {
+    var socketid = socket.id;
+    socket.on('query', function (query) {
+        console.log('Queried, text is: ',query.document.content);
+        socket.emit('query-response', { "response": "recieved" });
+    });
+});
