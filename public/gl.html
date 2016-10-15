@@ -68,14 +68,14 @@
                     [0, 3]
                 ]
                 var blobs = [
-                    {"pos": [0, 0, 0]},
-                    {"pos": [-200, 0, 0]},
-                    {"pos": [200, 0, 0]},
-                    {"pos": [0, 200, 0]}
+                    {"pos": [0, 0, 0], "radius": 50},
+                    {"pos": [-200, 0, 0], "radius": 20},
+                    {"pos": [200, 0, 0], "radius": 25},
+                    {"pos": [0, 200, 0], "radius": 15}
                 ]
                 var radius = 50;
                 for (var i=0; i<blobs.length; i++) {
-                    blobs[i].geo = new THREE.IcosahedronGeometry(radius, 1);
+                    blobs[i].geo = new THREE.IcosahedronGeometry(blobs[i].radius, 1);
                 }
 
 				var faceIndices = [ 'a', 'b', 'c' ];
@@ -106,8 +106,6 @@
                     blobs[g].group = group;
                     scene.add(group);
                 }
-
-
 
                 for (var c=0; c<connections.length; c++) {
                     var linesGeo = new THREE.Geometry();
