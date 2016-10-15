@@ -1,3 +1,4 @@
+"use strict";
 // load dependencies
 var express = require('express');
 var app = express();
@@ -83,7 +84,7 @@ function getTweets(user){
 	twit.get('statuses/user_timeline', params, function(error, tweets, response) {
 		var tweet_texts = [];
 		if (!error) {
-			for (i = 0; i < tweets.length; i++) {
+			for (var i = 0; i < tweets.length; i++) {
 			    console.log(tweets[i].text); //this gets the results of the tweets
 			    tweet_texts.push(tweets[i].text);
 			}
@@ -145,10 +146,10 @@ function Control(){
 	while (instructionsStack.length != 0){
 		// console.log("Instruction execeuting");
 		var Instruction = instructionsStack.pop();
-		usr = conn.findPlayer(Instruction.id);
+		var usr = conn.findPlayer(Instruction.id);
 		switch(Instruction.instruction) {
 		   	case "CLOCK":
-		   		k = getTweets(Instruction.val);
+		   		var k = getTweets(Instruction.val);
 		   		usr.sendTweetResults(k);
 		   		console.log("tweets sent");
 		   		break;
