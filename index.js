@@ -80,8 +80,11 @@ io.on('connection', function (socket) {
     });
 
     socket.on('disconnect', function() {
-		//remove it from connections list
-		console.log('client ' + socket.id + ' has dropped the server');
-	});
+        //remove it from connections list
+        console.log('client ' + socket.id + ' has dropped the server');
+    });
+    socket.on('interrogate', function(username) {
+        getTweets(username);
+    });
 });
 
