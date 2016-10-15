@@ -41,6 +41,19 @@
 			var mouseX = 0, mouseY = 0;
 			var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
+
+            var connections = [
+                [0, 1],
+                [0, 2],
+                [0, 3]
+            ]
+            var blobs = [
+                {"pos": [0, 0, 0], "radius": 50, "sentiment": 1, "sentimentRange": 0},
+                {"pos": [-200, 0, 0], "radius": 20, "sentiment": 1, "sentimentRange": 1},
+                {"pos": [200, 0, 0], "radius": 25, "sentiment": -1, "sentimentRange": 0},
+                {"pos": [0, 200, 0], "radius": 15, "sentiment": -1, "sentimentRange": 1}
+            ]
+
 			init();
 			animate();
 			function init() {
@@ -62,18 +75,6 @@
 				context.fillStyle = gradient;
 				context.fillRect( 0, 0, canvas.width, canvas.height );
 
-                var connections = [
-                    [0, 1],
-                    [0, 2],
-                    [0, 3]
-                ]
-                var blobs = [
-                    {"pos": [0, 0, 0], "radius": 50},
-                    {"pos": [-200, 0, 0], "radius": 20},
-                    {"pos": [200, 0, 0], "radius": 25},
-                    {"pos": [0, 200, 0], "radius": 15}
-                ]
-                var radius = 50;
                 for (var i=0; i<blobs.length; i++) {
                     blobs[i].geo = new THREE.IcosahedronGeometry(blobs[i].radius, 1);
                 }
@@ -86,8 +87,19 @@
                         for (var v=0; v<3; v++) {
                             vertexIndex = blobs[b].geo.faces[f][faceIndices[v]];
                             p = blobs[b].geo.vertices[vertexIndex];
-    						color = new THREE.Color( 0xffffff );
-    						color.setHSL( 0.125 * vertexIndex/blobs[b].geo.vertices.length, 1.0, 0.5 );
+                            var r, g, b;
+                            r = vertexIndex/blobs[b].geo.vertices.length * blobs[b].sentimentRange;
+                            r = 1 + r + blobs[b].sentiment;
+                            r = 0.5 * r;
+                            if (r>1) {
+                                r = 1;
+                            }
+                            if (r<0) {
+                                r = 0;
+                            }
+    						color = new THREE.Color(1-r, r, 0);
+                            vertexIndex/blobs[b].geo.vertices.length
+    						//color.setHSL( 0.125 * vertexIndex/blobs[b].geo.vertices.length, 1.0, 0.5 );
     						blobs[b].geo.faces[f].vertexColors[v] = color;
                         }
                     }
