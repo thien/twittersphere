@@ -6,30 +6,27 @@
 <script>
 	// initiate socket.io goods
 	var socket = io();
+	socket.on('query-response', function (response) {
+            console.log("Recieved response, it is ",response);
+        });
 </script>
-<style>
-    * {
-        transition: 1s;
-        position: absolute;
-    }
-</style>
 </head>
 <body id="a">
 <h1>coolproject11</h1>
 <p>this is the cool project</p>
+<textarea id="input" columns=40 rows=5>Some text about stuff</textarea>
+<button onClick="analyse()">Analyse</button>
 <script>
-    function project() {
-        var xxx = document.createElement("p");
-        var txt = document.createTextNode("this is the cool project");
-        xxx.appendChild(txt);
-        document.getElementById('a').appendChild(xxx);
-        var xx = document.querySelectorAll("h1, p");
-        for (var x = 0; x < xx.length; x++) {
-            xx[x].style.top = Math.floor(Math.random()*800);
-            xx[x].style.left = Math.floor(Math.random()*1024);
-        }
+    function analyse() {
+        var input = document.getElementById("input").innerHTML;
+        socket.emit('query',
+        { 
+            "document": {
+                "type":"PLAIN_TEXT",
+                "content": input
+            }
+        });
     }
-    setInterval(project,1000);
 </script>
 </body>
 </html>
