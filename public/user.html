@@ -17,14 +17,25 @@
             });
             function checkStacks() {
                 if (tweets.length > 0 && sentiment.length > 0) {
-                    $("#table").find('tbody')
-                    .append($('<tr>'))
-                    .append($('<td>').text(tweets[0].id + " | "+ sentiment[0].id))
-                    .append($('<td>').text(tweets[0].text))
-                    .append($('<td>').text(sentiment[0].response.documentSentiment.polarity))
-                    .append($('<td>').text(sentiment[0].response.documentSentiment.magnitude))
-                    tweets = tweets.splice(1,tweets.length);
-                    sentiment = sentiment.splice(1,sentiment.length);
+                    var found = false;
+                    for (var i = 0; i < tweets.length; i++) {
+                        if (tweets[0].id == sentiment[i].id) {
+                            found = true;
+                            var tmp = sentiment[0];
+                            sentiment[0] = sentiment[i];
+                            sentiment[i] = tmp;
+                        }
+                    }
+                    if (found) {
+                        $("#table").find('tbody')
+                        .append($('<tr>'))
+                        .append($('<td>').text(tweets[0].id + " | "+ sentiment[0].id))
+                        .append($('<td>').text(tweets[0].text))
+                        .append($('<td>').text(sentiment[0].response.documentSentiment.polarity))
+                        .append($('<td>').text(sentiment[0].response.documentSentiment.magnitude))
+                        tweets = tweets.splice(1,tweets.length);
+                        sentiment = sentiment.splice(1,sentiment.length);
+                    }
                 }
             }
             setInterval(checkStacks,100);

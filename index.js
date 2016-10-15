@@ -7,6 +7,7 @@ var io = require('socket.io')(http);
 var util = require('util');
 var twitter = require('twitter');
 var st = require('./twitter_key.js');
+var async = require('async');
 var tweet_query;
 // load necessary variables for system
 var instructionsStack = [];
@@ -30,18 +31,21 @@ function getTweets(user,socket){
     var params = {screen_name: user, count: 30, include_rts: 'false'};
     twit.get('statuses/user_timeline', params, function(error, tweets, response) {
         if (!error) {
-            var options = {
-                verbose: true
-            };
+            async.each(tweets,function(tweet) {
+                socket.emit('tweet', tweet);
+                language.annotate(tweet.text,function(err,sentiment,apiResponse) {
+                    socket.emit('sentiment', {"id": tweet.id, "response": apiResponse})
+                });
+            });
             // return tweet_texts;
-            for (var i = 0; i < tweets.length; i++) {
+            /*for (var i = 0; i < tweets.length; i++) {
                 var tweet = tweets[i].text;
                 var id = tweets[i].id;
                 socket.emit('tweet', {"id": id, "text": tweets[i].text})
                 language.annotate(tweets[i].text,options,function(err,sentiment,apiResponse) {
                     socket.emit('sentiment', {"id": id, "response": apiResponse})
                 });
-            }
+            }*/
         } else {
             console.log(error);
         }
