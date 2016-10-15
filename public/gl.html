@@ -84,17 +84,17 @@
 			var effectFXAA, bloomPass, renderScene;
 
             var connections = [
-                {"verts": [0, 1], "r": 0, "g": 1, "b": 0, "number": 5},
-                {"verts": [0, 2], "r": 1, "g": 0, "b": 0, "number": 10},
-                {"verts": [0, 3], "r": 0.7, "g": 1, "b": 0, "number": 3}
-            ]
+                { "verts": [0, 1], "r": 0, "g": 1, "b": 0, "number": 5 },
+                { "verts": [0, 2], "r": 1, "g": 0, "b": 0, "number": 10 },
+                { "verts": [0, 3], "r": 0.7, "g": 1, "b": 0, "number": 3 }
+            ];
             LINE_SEP_FAC = 0.5
             var blobs = [
-                {"pos": [0, 0, 0], "radius": 70, "sentiment": 1, "sentimentRange": 0},
-                {"pos": [-200, 0, 0], "radius": 40, "sentiment": 1, "sentimentRange": 1},
-                {"pos": [200, 0, 0], "radius": 55, "sentiment": -1, "sentimentRange": 0},
-                {"pos": [0, 200, 0], "radius": 45, "sentiment": -1, "sentimentRange": 1}
-            ]
+                { "pos": [0, 0, 0], "radius": 70, "sentiment": 1, "sentimentRange": 0 , "magnitude": 90},
+                { "pos": [-200, 0, 0], "radius": 40, "sentiment": 1, "sentimentRange": 1, "magnitude": 20 },
+                { "pos": [200, 0, 0], "radius": 55, "sentiment": -1, "sentimentRange": 0, "magnitude": 30 },
+                { "pos": [0, 200, 0], "radius": 45, "sentiment": -1, "sentimentRange": 1, "magnitude": 60 }
+            ];
 
 			init();
 			animate();
@@ -128,17 +128,7 @@
                         for (var v=0; v<3; v++) {
                             vertexIndex = blobs[b].geo.faces[f][faceIndices[v]];
                             p = blobs[b].geo.vertices[vertexIndex];
-                            var red, green, blue;
-                            red = vertexIndex/blobs[b].geo.vertices.length * blobs[b].sentimentRange;
-                            var blue = red;
-                            red = 0.5 * blobs[b].sentiment + red;
-                            if (red>1) {
-                                red = 1;
-                            }
-                            if (red<0) {
-                                red = 0;
-                            }
-    						color = new THREE.Color(1-red, red, blue);
+                            color = getColourFromSentiment(blobs[b].sentiment, blobs[b].magnitude);
     						//color.setHSL( 0.125 * vertexIndex/blobs[b].geo.vertices.length, 1.0, 0.5 );
     						blobs[b].geo.faces[f].vertexColors[v] = color;
                         }
@@ -269,6 +259,24 @@
 				requestAnimationFrame( animate );
 				render();
 				stats.update();
+			}
+			function getColourFromSentiment(sentiment, magnitude) {
+			    //let the limit be +-1. -1 is very bad
+                //internal calculations of sentiment will be 0-1
+			    //colour: {"r": float(0-1), "g": float(0-1), "b": float(0-1)}
+			    var r, g, b;
+                if (sentiment < 0) {
+                    r = 1;
+                    g = 1 - (magnitude * 0.01);
+                    b = 0.3- (0.1 * magnitude);
+                }
+                else {
+                    r = 1 - (magnitude * 0.01);
+                    g = 1;
+                    b = 0.3 - (0.1 * magnitude);
+                }
+			    console.log("Returning this " + r,g,b +"for sentiment " + sentiment);
+			    return { "r": r, "g": g, "b": b };
 			}
 			function render() {
 				camera.position.x += ( mouse.x - camera.position.x ) * 0.05;
