@@ -84,18 +84,73 @@
 	    };
 	    var effectFXAA, bloomPass, renderScene;
 
-	    var connections = [
-	        { "verts": [0, 1], "tweets": [{"polarity": 1, "magnitude": 30}, {"polarity": 1, "magnitude": 70}, {"polarity": -1, "magnitude": 99}], "lineObjs": new Array()},
-	        { "verts": [0, 2], "tweets": [{ "polarity": 1, "magnitude": 30 }, { "polarity": 1, "magnitude": 70 }, { "polarity": -1, "magnitude": 99 }], "lineObjs": new Array()},
-	        { "verts": [0, 3], "tweets": [{ "polarity": 1, "magnitude": 30 }, { "polarity": 1, "magnitude": 70 }, { "polarity": -1, "magnitude": 99 }], "lineObjs": new Array()}
-	    ];
-	    LINE_SEP_FAC = 0.5;
-	    var blobs = [
-	        { "pos": [0, 0, 0], "radius": 70, "polarity": 1, "polarityRange": 0 , "magnitude": 90},
-	        { "pos": [-200, 0, 0], "radius": 40, "polarity": 1, "polarityRange": 1, "magnitude": 20 },
-	        { "pos": [200, 0, 0], "radius": 55, "polarity": -1, "polarityRange": 0, "magnitude": 30 },
-	        { "pos": [0, 200, 0], "radius": 45, "polarity": -1, "polarityRange": 1, "magnitude": 60 }
-	    ];
+        function addBlob(userName) {
+            var newUser = { "userName": userName, "pos": [Math.random() * 100, Math.random() * 100, Math.random() * 100],
+                            "radius": 20, "sentiment": 0, "magnitude": 0, "tweets": []};
+            blobs.push(newUser);
+            return blobs.length - 1;
+        }
+
+        function findUser(userName) {
+            for ( var u=0; u<blobs.length; u++) {
+                if (blobs[u].userName === userName) {
+                    return u;
+                }
+            }
+            return -1;
+        }
+
+        function findTweetPair(fromUser, toUser) {
+            for (var c=0; c<connections.length; c++) {
+                v0 = connections[c].verts[0]
+                v1 = connections[c].verts[1]
+                if ((v0 == fromUser && v1 == toUser) || (v0 == toUser && v1 == fromUser)) {
+                    return c;
+                }
+            }
+            return -1;
+        }
+
+        function addTweet(fromUser, toUser, sentiment, magnitude) {
+            // fromUser and toUser should be integers. Use findUser to find int.
+            if (toUser > 0) {
+                var tweetID = findTweetPair(fromUser, toUser);
+                if (tweetID < 0) {
+                    connections.push({"verts": [fromUser, toUser], tweets: [], "lineObjs": []})
+                    tweetID = connections.length - 1
+                }
+                connections[tweetID].tweets.push({"sentiment": sentiment, "magnitude": magnitude})
+                blobs[fromUser].radius += 4;
+            } else {
+                var b = blobs[fromUser];
+                b.sentiment = (b.sentiment * b.tweets.length + sentiment) / (b.tweets.length + 1)
+                b.magnitude = (b.magnitude * b.tweets.length + magnitude) / (b.tweets.length + 1)
+                b.radius += 2;
+                b.tweets.push({"sentiment": sentiment, "magnitude": magnitude})
+            }
+        }
+
+        var blobs = [];
+        var ba = addBlob("a");
+        var bb = addBlob("b");
+        var bc = addBlob("c");
+        var bd = addBlob("d");
+
+        var connections = [];
+
+        addTweet(ba, bb, 1, 30);
+        addTweet(ba, bb, 1, 70);
+        addTweet(ba, bb, 1, 99);
+
+        addTweet(ba, bc, 1, 30);
+        addTweet(ba, bc, 1, 70);
+        addTweet(ba, bc, 1, 99);
+
+        addTweet(ba, bd, 1, 30);
+        addTweet(ba, bd, 1, 70);
+        addTweet(ba, bd, 1, 99);
+
+        LINE_SEP_FAC = 0.5;
 
 	    init();
 	    animate();
