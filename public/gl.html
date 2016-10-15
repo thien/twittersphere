@@ -27,7 +27,6 @@
 	<body>
 
 		<div id="container"></div>
-		<div id="info"><a href="http://threejs.org" target="_blank">three.js</a> webgl - vertex colors</div>
 
         <script src="js/three.min.js"></script>
 
@@ -63,6 +62,11 @@
 				context.fillStyle = gradient;
 				context.fillRect( 0, 0, canvas.width, canvas.height );
 
+                var connections = [
+                    [0, 1],
+                    [0, 2],
+                    [0, 3]
+                ]
                 var blobs = [
                     {"pos": [0, 0, 0]},
                     {"pos": [-200, 0, 0]},
@@ -93,8 +97,6 @@
 					new THREE.MeshBasicMaterial( { color: 0x000000, shading: THREE.FlatShading, wireframe: true, transparent: true } )
 				];
 
-                var linesGeo = new THREE.Geometry();
-
                 for (var g=0; g<blobs.length; g++) {
                     group = THREE.SceneUtils.createMultiMaterialObject(blobs[g].geo, materials);
                     group.position.x = blobs[g].pos[0];
@@ -103,11 +105,16 @@
                     //group.rotation.x = ...
                     blobs[g].group = group;
                     scene.add(group);
-                    linesGeo.vertices.push(blobs[g].group.position);
                 }
 
-				var lines = new THREE.Line( linesGeo, new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.5, linewidth: 10 } ) );
-				scene.add( lines );
+
+
+                for (var c=0; c<connections.length; c++) {
+                    var linesGeo = new THREE.Geometry();
+                    linesGeo.vertices.push(blobs[connections[c][0]].group.position);
+                    linesGeo.vertices.push(blobs[connections[c][1]].group.position);
+                    scene.add( new THREE.Line( linesGeo, new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.5 } ) ) );
+                }
 
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
 				renderer.setClearColor( 0xffffff );
