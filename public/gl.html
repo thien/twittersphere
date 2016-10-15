@@ -189,7 +189,9 @@
                     }
                 }
 
-			    var SEPARATION = 100, AMOUNTX = 50, AMOUNTY = 50; YOFFSET = -50
+			    var SEPX = 120, AMOUNTX = 10;
+                var SEPY = 120, AMOUNTY = 10;
+                var SEPZ = 240, AMOUNTZ = 20, ZOFFSET = -1100;
 
                 parent = new THREE.Object3D();
                 scene.add(parent);
@@ -199,10 +201,12 @@
 				var i = 0;
 				for ( var ix = 0; ix < AMOUNTX; ix ++ ) {
 					for ( var iy = 0; iy < AMOUNTY; iy ++ ) {
-						var x = ix * SEPARATION - ( ( AMOUNTX * SEPARATION ) / 2 );
-                        var y = 0;
-						var z = iy * SEPARATION - ( ( AMOUNTY * SEPARATION ) / 2 ) + YOFFSET;
-                        geo.vertices.push(new THREE.Vector3(x, y, z));
+                        for ( var iz = 0; iz < AMOUNTZ; iz++) {
+    						var x = ix * SEPX - ( ( AMOUNTX * SEPX ) / 2 );
+                            var y = iy * SEPY - ( ( AMOUNTY * SEPY ) / 2 );
+    						var z = iz * SEPZ - ( ( AMOUNTZ * SEPZ ) / 2 ) + ZOFFSET;
+                            geo.vertices.push(new THREE.Vector3(x, y, z));
+                        }
 					}
 				}
                 mesh = new THREE.Points(geo, new THREE.PointsMaterial( {size: 3, color: {r: 1, g: 0, b: 0}}));
