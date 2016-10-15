@@ -34,6 +34,21 @@
 		<script src="js/libs/stats.min.js"></script>
 
 		<script>
+            // the initial seed
+            Math.seed = 6;
+
+            // in order to work 'Math.seed' must NOT be undefined,
+            // so in any case, you HAVE to provide a Math.seed
+            Math.seededRandom = function(max, min) {
+                max = max || 1;
+                min = min || 0;
+
+                Math.seed = (Math.seed * 9301 + 49297) % 233280;
+                var rnd = Math.seed / 233280;
+
+                return min + rnd * (max - min);
+            }
+
 			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 			var container, stats;
 			var camera, scene, renderer;
@@ -43,10 +58,11 @@
 			var windowHalfY = window.innerHeight / 2;
 
             var connections = [
-                [0, 1],
-                [0, 2],
-                [0, 3]
+                {"verts": [0, 1], "r": 0, "g": 1, "b": 0, "number": 5},
+                {"verts": [0, 2], "r": 1, "g": 0, "b": 0, "number": 10},
+                {"verts": [0, 3], "r": 0.7, "g": 1, "b": 0, "number": 3}
             ]
+            LINE_SEP_FAC = 0.5
             var blobs = [
                 {"pos": [0, 0, 0], "radius": 70, "sentiment": 1, "sentimentRange": 0},
                 {"pos": [-200, 0, 0], "radius": 40, "sentiment": 1, "sentimentRange": 1},
@@ -113,10 +129,33 @@
                 }
 
                 for (var c=0; c<connections.length; c++) {
-                    var linesGeo = new THREE.Geometry();
-                    linesGeo.vertices.push(blobs[connections[c][0]].group.position);
-                    linesGeo.vertices.push(blobs[connections[c][1]].group.position);
-                    scene.add( new THREE.Line( linesGeo, new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.5 } ) ) );
+                    for (var l=0; l<connections[c].number; l++) {
+                        var vert0 = blobs[connections[c].verts[0]];
+                        var vert1 = blobs[connections[c].verts[1]];
+
+                        var linesGeo = new THREE.Geometry();
+
+                        var theta = Math.seededRandom(0, Math.PI * 2);
+                        var phi = Math.seededRandom(-Math.PI/2, Math.PI/2);
+                        var radius0 = Math.seededRandom(0, vert0.radius);
+                        var radius1 = Math.seededRandom(0, vert1.radius);
+
+                        var x0 = LINE_SEP_FAC * radius0 * Math.cos(theta) * Math.cos(phi) + vert0.group.position.x;
+                        var y0 = LINE_SEP_FAC * radius0 * Math.sin(phi) + vert0.group.position.y;
+                        var z0 = LINE_SEP_FAC * radius0 * Math.sin(theta) * Math.cos(phi) + vert0.group.position.z;
+
+                        var x1 = LINE_SEP_FAC * radius1 * Math.cos(theta) * Math.cos(phi) + vert1.group.position.x;
+                        var y1 = LINE_SEP_FAC * radius1 * Math.sin(phi) + vert1.group.position.y;
+                        var z1 = LINE_SEP_FAC * radius1 * Math.sin(theta) * Math.cos(phi) + vert1.group.position.z;
+
+                        //linesGeo.vertices.push(vert0.group.position);
+                        linesGeo.vertices.push({"x": x0, "y": y0, "z": z0});
+                        //linesGeo.vertices.push(vert1.group.position);
+                        linesGeo.vertices.push({"x": x1, "y": y1, "z": z1});
+                        var r = connections[c].r, g = connections[c].g,
+                            b = connections[c].b;
+                        scene.add( new THREE.Line( linesGeo, new THREE.LineBasicMaterial( { color: new THREE.Color(r, g, b), opacity: 1 } ) ) );
+                    }
                 }
 
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
