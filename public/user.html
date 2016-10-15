@@ -27,16 +27,25 @@
                         }
                     }
                     if (found) {
+                        console.log(tweets[0]);
                         $("#table").find('tbody')
                         .append($('<tr>'))
                         .append($('<td>').text(tweets[0].id + " | "+ sentiment[0].id))
                         .append($('<td>').text(tweets[0].text))
+                        .append($('<td>').text(listMentions(tweets[0].entities.user_mentions)))
                         .append($('<td>').text(sentiment[0].response.documentSentiment.polarity))
                         .append($('<td>').text(sentiment[0].response.documentSentiment.magnitude))
                         tweets = tweets.splice(1,tweets.length);
                         sentiment = sentiment.splice(1,sentiment.length);
                     }
                 }
+            }
+            function listMentions(data){
+                var k = [];
+                for (var i = 0; i < data.length; i++){
+                    k.push(data[i].screen_name);
+                }
+                return k;
             }
             setInterval(checkStacks,100);
         </script>
@@ -49,6 +58,7 @@
           <tr>
             <th>ID | ID</th>
             <th>Tweet</th>
+            <th>Mentions</th>
             <th>Polarity</th>
             <th>Magnitude</th>
           </tr>
@@ -57,7 +67,7 @@
     <script>
         socket.emit('interrogate', window.location.pathname.substr(1,window.location.pathname.length-1));
 </script>
-            
+
 
     </script>
     </body>
