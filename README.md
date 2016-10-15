@@ -1,2 +1,3 @@
 # coolproject11
-The coolest project
+
+Hack Sheffield v2 hackathon project entry
