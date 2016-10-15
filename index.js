@@ -17,16 +17,6 @@ app.use(express.static('public'));
 var port = 8080;
 var twit = new twitter(st.s());
 
-class Connection {
-	// var connectionList = [];
-	constructor(socket, id){
-		this.socket = socket;
-		this.id = id;
-		// var openConnections = []; //debatable
-		// var uniqueSocketID = 0; //debatable
-	}
-}
-
 class Connections {
 	constructor(){
 		//list that contains players online
