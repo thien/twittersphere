@@ -9,23 +9,25 @@
             var socket = io();
             var tweets = [];
             var sentiment = [];
-            // var myVar = <%- passValue(myVar) %>
-            // var results = [[]];
             socket.on('tweet', function (response) {
-                // console.log(response);
                 tweets.push(response);
-                // drawtable1(response);
             });
             socket.on('sentiment', function (response) {
-                // console.log(response);
                 sentiment.push(response);
-                // console.log(tweets);
-                // console.log(sentiment);
-                if (sentiment.length > 25){
-                    drawtable();
-                }
             });
-
+            function checkStacks() {
+                if (tweets.length > 0 && sentiment.length > 0) {
+                    $("#table").find('tbody')
+                    .append($('<tr>'))
+                    .append($('<td>').text(tweets[0].id + " | "+ sentiment[0].id))
+                    .append($('<td>').text(tweets[0].text))
+                    .append($('<td>').text(sentiment[0].response.documentSentiment.polarity))
+                    .append($('<td>').text(sentiment[0].response.documentSentiment.magnitude))
+                    tweets = tweets.splice(1,tweets.length);
+                    sentiment = sentiment.splice(1,sentiment.length);
+                }
+            }
+            setInterval(checkStacks,100);
         </script>
     </head>
     <body>
@@ -34,36 +36,18 @@
 <div width="500px">
 <table class="table" id="table" width="1000px" align="right">
           <tr>
+            <th>ID | ID</th>
             <th>Tweet</th>
-             <th>sentiment</th>
-          </tr>
-          <tr>
+            <th>Polarity</th>
+            <th>Magnitude</th>
           </tr>
         </table>
         </div>
     <script>
         socket.emit('interrogate', window.location.pathname.substr(1,window.location.pathname.length-1));
+</script>
+            
 
-
-
-            function drawtable() {
-        // $("#table").find("tr:gt(0)").remove();
-        for (i = 0; i < 30; i++) {
-            console.log(i);
-            console.log(tweets[i]);
-            console.log(sentiment[i]);
-        };
-            $("#table").find('tbody')
-            .append($('<tr>'))
-            .append($('<td>'))
-            .append($('<tr>').text(tweets[i]))
-            .append($('<tr>').text(sentiment[i]))
-};
-// }
-    // socket.on('board-update', function(jsonData){
-    //   updateGameState(jsonData);
-    //   drawtable(jsonData);
-    // });
     </script>
     </body>
 </html>
