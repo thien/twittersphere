@@ -58,21 +58,16 @@ app.get("/", function(req, res) {
 	res.sendFile(__dirname);
 });
 
+app.get("/([a-zA-Z0-9]*)", function(req, res) {
+	res.sendFile("user.html");
+});
+
 http.listen(port, function(){
 	console.log("Server up on http://localhost:%s", port);
 });
 
 io.on('connection', function (socket) {
-	console.log('client ' + socket.id + ' has joined the server');
-
-
-	socket.on('instruction', function(instructionPackage){
-		var Instruction = JSON.parse(instructionPackage);
-		//append socket id so we can process it according to player.
-		Instruction.id = socket.id;
-		instructionsStack.push(Instruction);
-	});
-
+    console.log('client ' + socket.id + ' has joined the server');
 
     socket.on('query', function (query) {
         console.log('Queried, text is: ',query.document.content);
