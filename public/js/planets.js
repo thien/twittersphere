@@ -1,4 +1,18 @@
 
+window.addEventListener('DOMMouseScroll', mousewheel, false);
+window.addEventListener('mousewheel', mousewheel, false);
+
+function mousewheel(event) {
+
+    var fovMAX = 160;
+    var fovMIN = 1;
+
+    camera.fov -= event.wheelDeltaY * 0.05;
+    camera.fov = Math.max( Math.min( camera.fov, fovMAX ), fovMIN );
+    camera.projectionMatrix = new THREE.Matrix4().makePerspective(camera.fov, window.innerWidth / window.innerHeight, camera.near, camera.far);
+
+}
+
 // the initial seed
 Math.seed = 6;
 
