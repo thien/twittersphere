@@ -31,7 +31,7 @@ function getTweets(user,socket){
     var params = {screen_name: user, count: 100, include_rts: 'false'};
     twit.get('statuses/user_timeline', params, function(error, tweets, response) {
         if (!error) {
-        	// console.log(tweets[0]);
+        	console.log(tweets[0].user.description);
         	socket.emit('twitter_user_details', tweets[0]);
         	console.log(tweets[0].user.profile_image_url);
             async.each(tweets,function(tweet) {

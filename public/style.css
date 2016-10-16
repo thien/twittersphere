@@ -6,7 +6,7 @@
 }
 body {
     background-color: #EFEFEF;
-    display: flex;
+    /*display: flex;*/
     font-size: 1em;
     line-height: 1.6;
     font-weight: 400;
@@ -19,7 +19,7 @@ body {
 
 #formHolder h1 {
     margin-top: 0;
-	display: block;
+	/*display: block;*/
 }
 /*#cover-image {
 	background-color: #b55252;
@@ -75,7 +75,7 @@ height: 140px;
 }
 
 label {
-  display: inline-block;
+  /*display: inline-block;*/
   width: 5em;
 }
 
@@ -131,6 +131,9 @@ user-select: none;           /* Non-prefixed version, currently
 	background-color: rgba(255, 85, 85, 0.29);
 	color: #ffffff;
 	font-weight: bold;
+	text-align: center;
+	top: 0;
+	right: 0;
 }
 
 td{
