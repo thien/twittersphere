@@ -79,6 +79,7 @@
                                         toId = addBlob(allData[r].mentions[m].screen_name);
                                     }
                                     addTweet(0, toId, allData[r].response.documentSentiment.polarity, allData[r].response.documentSentiment.magnitude);
+                                    addTweet(toId, 0, allData[r].response.documentSentiment.polarity, allData[r].response.documentSentiment.magnitude);
                                 }
                             } else {
                                 addTweet(0, -1, allData[r].response.documentSentiment.polarity, allData[r].response.documentSentiment.magnitude);
