@@ -251,7 +251,8 @@
 	        var color, p, vertexIndex;
 
 	        for (var b=0; b<blobs.length; b++) {
-                /*var bbsName = blobs[b].userName;
+                var bbsName = blobs[b].userName;
+                var pos = blobs[b.group]
 
                 var loader = new THREE.FontLoader();
                 loader.load( 'fonts/optimer_regular.typeface.json', function ( font ) {
@@ -275,11 +276,11 @@
                     );
 
                     var mesh = new THREE.Mesh( textGeometry, textMaterial );
-                    mesh.position.set(100, 100, 100);
+                    mesh.position.set(blobs[b].group.position.x, blobs[b].group.position.y, blobs[b].group.position.z);
 
                     scene.add( mesh );
 
-                });*/
+                });
 	            for (var f=0; f<blobs[b].geo.faces.length; f++) {
 	                for (var v=0; v<3; v++) {
 	                    vertexIndex = blobs[b].geo.faces[f][faceIndices[v]];

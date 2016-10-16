@@ -68,6 +68,13 @@
                         dataView.style.display = "none";
                         visualView.style.display = "block";
                         button.innerHTML = "Switch to DataView";
+                        addBlob(window.location.pathname.substr(1,window.location.pathname.length-1));
+                        for (var r=0; r<allData.length; r++) {
+                            addTweet(0, -1, allData[r].response.documentSentiment.polarity, allData[r].response.documentSentiment.magnitude);
+                        }
+                	    init();
+                	    animate();
+                        initWithData();
                     }
                 }
             </script>
@@ -143,11 +150,11 @@
 	        bloomThreshold: 0.85,
 	        bloomRadius: 0.4
 	    };
-	    var effectFXAA, bloomPass, renderScene; 
-        
+	    var effectFXAA, bloomPass, renderScene;
+
         function addBlob(userName) {
             var newUser = { "userName": userName, "pos": [Math.random() * 100, Math.random() * 100, Math.random() * 100],
-                            "radius": 20, "sentiment": 0, "magnitude": 0, "tweets": []};
+                            "radius": 20, "polarity": 0, "magnitude": 0, "tweets": []};
             blobs.push(newUser);
             return blobs.length - 1;
         }
@@ -180,26 +187,26 @@
                     connections.push({"verts": [fromUser, toUser], tweets: [], "lineObjs": []})
                     tweetID = connections.length - 1
                 }
-                connections[tweetID].tweets.push({"sentiment": sentiment, "magnitude": magnitude})
+                connections[tweetID].tweets.push({"polarity": sentiment, "magnitude": magnitude})
                 blobs[fromUser].radius += 4;
             } else {
                 var b = blobs[fromUser];
-                b.sentiment = (b.sentiment * b.tweets.length + sentiment) / (b.tweets.length + 1)
+                b.polarity = (b.polarity * b.tweets.length + sentiment) / (b.tweets.length + 1)
                 b.magnitude = (b.magnitude * b.tweets.length + magnitude) / (b.tweets.length + 1)
                 b.radius += 2;
-                b.tweets.push({"sentiment": sentiment, "magnitude": magnitude})
+                b.tweets.push({"polarity": sentiment, "magnitude": magnitude})
             }
         }
 
         var blobs = [];
-        var ba = addBlob("a");
+        /*var ba = addBlob("a");
         var bb = addBlob("b");
         var bc = addBlob("c");
-        var bd = addBlob("d");
+        var bd = addBlob("d");*/
 
         var connections = [];
 
-        addTweet(ba, bb, 1, 30);
+        /*addTweet(ba, bb, 1, 30);
         addTweet(ba, bb, 1, 70);
         addTweet(ba, bb, 1, 99);
 
@@ -209,16 +216,15 @@
 
         addTweet(ba, bd, 1, 30);
         addTweet(ba, bd, 1, 70);
-        addTweet(ba, bd, 1, 99);
+        addTweet(ba, bd, 1, 99);*/
 
         var dataInited = false;
 
         LINE_SEP_FAC = 0.5;
 
-	    init();
-	    animate();
         //initWithData();
 	    function init() {
+            console.log("Output");
 	        container = document.getElementById( 'container' );
 	        camera = new THREE.PerspectiveCamera( 20, window.innerWidth / window.innerHeight, 1, 10000 );
 
