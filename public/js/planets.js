@@ -4,7 +4,7 @@ window.addEventListener('mousewheel', mousewheel, false);
 
 function mousewheel(event) {
 
-    var fovMAX = 160;
+    var fovMAX = 90;
     var fovMIN = 1;
 
     camera.fov -= event.wheelDeltaY * 0.05;
@@ -84,12 +84,12 @@ function addTweet(fromUser, toUser, sentiment, magnitude) {
             tweetID = connections.length - 1
         }
         connections[tweetID].tweets.push({"polarity": sentiment, "magnitude": magnitude})
-        blobs[fromUser].radius += 4;
+        blobs[fromUser].radius += 2;
     } else {
         var b = blobs[fromUser];
         b.polarity = (b.polarity * b.tweets.length + sentiment) / (b.tweets.length + 1)
         b.magnitude = (b.magnitude * b.tweets.length + magnitude) / (b.tweets.length + 1)
-        b.radius += 2;
+        b.radius += 1;
         b.tweets.push({"polarity": sentiment, "magnitude": magnitude})
     }
 }
@@ -141,9 +141,9 @@ function init() {
         blobs[i].geo = new THREE.IcosahedronGeometry(blobs[i].radius, 1);
     }
 
-    var SEPX = 120, AMOUNTX = 10;
-    var SEPY = 120, AMOUNTY = 10;
-    var SEPZ = 240, AMOUNTZ = 20, ZOFFSET = -1100;
+    var SEPX = 120, AMOUNTX = 100;
+    var SEPY = 120, AMOUNTY = 100;
+    var SEPZ = 240, AMOUNTZ = 20, ZOFFSET = -1200;
 
     parent = new THREE.Object3D();
     scene.add(parent);
@@ -164,7 +164,7 @@ function init() {
     mesh = new THREE.Points(geo, new THREE.PointsMaterial( {size: 3, color: {r: 1, g: 0, b: 0}}));
     parent.add(mesh);
 
-    scene.fog = new THREE.FogExp2( 0x000000, 0.00035 );
+    scene.fog = new THREE.FogExp2( 0x000000, 0.00045 );
 
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setClearColor( scene.fog.color );
@@ -184,7 +184,7 @@ function init() {
     var copyPass = new THREE.ShaderPass(THREE.CopyShader);
     copyPass.renderToScreen = true;
 
-    var effectBloom = new THREE.BloomPass(3, 15, 10, 1024);
+    var effectBloom = new THREE.BloomPass(3.5, 15, 10, 1024);
 
     /*effectFocus = new THREE.ShaderPass(THREE.FocusShader);
     effectFocus.uniforms["screenWidth"].value = window.innerWidth;
