@@ -4,6 +4,7 @@
         <script src="/socket.io/socket.io.js"></script>
         <script src="/js/three.min.js"></script>
         <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+         <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'><link href="style.css" type="text/css" rel="stylesheet">
         <script>
             var socket = io();
             var tweets = [];
@@ -33,7 +34,7 @@
                     if (found && sentiment[0].response && tweets[0]) {
                         $("#table").find('tbody')
                         .append($('<tr>'))
-                        .append($('<td>').text(tweets[0].id + " | "+ sentiment[0].id))
+                        .append($('<td>').text(tweets[0].id))
                         .append($('<td>').text(tweets[0].text))
                         .append($('<td>').append(listMentions(tweets[0].entities.user_mentions)))
                         .append($('<td>').text(sentiment[0].response.documentSentiment.polarity))
@@ -96,9 +97,9 @@
             <h1 id="title"></h1>
             <script>document.getElementById("title").innerHTML = window.location.pathname.substr(1,window.location.pathname.length-1)</script>
             <p>Here are all the recent tweets from this user, along with a sentiment value from 0-100</p>
-            <table class="table" id="table" width="1000px" align="right">
+            <table class="table" id="table" width="100%" align="right">
                 <tr>
-                    <th>ID | ID</th>
+                    <th>ID</th>
                     <th>Tweet</th>
                     <th>Mentions</th>
                     <th>Polarity</th>

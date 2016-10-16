@@ -28,7 +28,7 @@ var twit = new twitter(st.s());
 
 //getting tweets and sentiments from a twitter user
 function getTweets(user,socket){
-    var params = {screen_name: user, count: 30, include_rts: 'false'};
+    var params = {screen_name: user, count: 100, include_rts: 'false'};
     twit.get('statuses/user_timeline', params, function(error, tweets, response) {
         if (!error) {
             async.each(tweets,function(tweet) {
