@@ -146,7 +146,22 @@
 	<script src="js/postprocessing/UnrealBloomPass.js"></script>
 	<script src="js/planets.js"></script>
 <!--	<script>
+=======
+	<script>
+            window.addEventListener('DOMMouseScroll', mousewheel, false);
+            window.addEventListener('mousewheel', mousewheel, false);
+>>>>>>> origin/master
 
+            function mousewheel(event) {
+
+                var fovMAX = 160;
+                var fovMIN = 1;
+
+                camera.fov -= event.wheelDeltaY * 0.05;
+                camera.fov = Math.max( Math.min( camera.fov, fovMAX ), fovMIN );
+                camera.projectionMatrix = new THREE.Matrix4().makePerspective(camera.fov, window.innerWidth / window.innerHeight, camera.near, camera.far);
+
+            }
 	    // the initial seed
 	    Math.seed = 6;
 
@@ -208,6 +223,7 @@
             }
             return -1;
         }
+
 
         function addTweet(fromUser, toUser, sentiment, magnitude) {
             // fromUser and toUser should be integers. Use findUser to find int.
