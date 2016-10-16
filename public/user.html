@@ -14,7 +14,6 @@
             });
             socket.on('sentiment', function (response) {
                 sentiment.push(response);
-                allData.push(response);
             });
             function checkStacks() {
                 if (tweets.length > 0 && sentiment.length > 0) {
@@ -22,13 +21,16 @@
                     for (var i = 0; i < tweets.length; i++) {
                         if (tweets[0].id == sentiment[i].id) {
                             found = true;
+                            var response = sentiment[i];
+                            response.mentions = tweets[0].entities.user_mentions;
+                            console.log(response);
+                            allData.push(response);
                             var tmp = sentiment[0];
                             sentiment[0] = sentiment[i];
                             sentiment[i] = tmp;
                         }
                     }
                     if (found && sentiment[0].response && tweets[0]) {
-                        console.log(tweets[0]);
                         $("#table").find('tbody')
                         .append($('<tr>'))
                         .append($('<td>').text(tweets[0].id + " | "+ sentiment[0].id))
