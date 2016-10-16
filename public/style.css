@@ -1,15 +1,45 @@
+/* @override 
+	http://localhost:8080/style.css */
+* {
+	margin: 0;
+	padding: 0;
+}
 body {
-    background-color: #EFEFEF;  
+    background-color: #EFEFEF;
     display: flex;
-    font-size: 1.5em; 
+    font-size: 1em;
     line-height: 1.6;
     font-weight: 400;
-    font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    color: #222; 
+    font-family: -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif !important;
+    text-rendering: optimizeLegibility;
+    font-weight: 100;
+    color: #f9e6e5;
+    color: #222;
 }
 
 #formHolder h1 {
     margin-top: 0;
+	display: block;
+}
+/*#cover-image {
+	background-color: #b55252;
+	display: block;
+	width: 100%;
+	height: 400px;
+	/*background-color: #f43a3a;*!/
+	margin-right: auto;
+	margin-left: auto;
+	position: relative;
+}*/
+#twitter-profile-pic {
+width: 140px;
+height: 140px;
+	/*background-color: #6e1414;*/
+	position: relative;
+	top: -100px;
+	margin-bottom: -80px;
+	margin-right: auto;
+	margin-left: auto;
 }
 
 #formHolder {
@@ -32,14 +62,124 @@ body {
     margin-left: 0.25em;
 }
 
+#title {
+	text-align: center;
+	font-weight: 500;
+}
+#title a {
+	text-decoration: none;
+	color: #891818;
+}
+#title a:hover {
+	color: #a81e1e;
+}
+
+label {
+  display: inline-block;
+  width: 5em;
+}
+
+p {
+}
+table {
+	margin: 20px auto;
+	table-layout: fixed;
+	/*column-width: 100px;*/
+	width: 95%;
+}
+a#tweetlink {
+	color: #ffffff;
+	font-weight: bold;
+	text-decoration: none;
+	background-color: #824545;
+	padding: 5px;
+	margin: 5px;
+	display: inline-block;
+}
+a#tweetlink:hover {
+	background-color: #ac2121;
+}
+#dataview p {
+	text-align: center;
+}
+#controls {
+	text-align: center;
+	
+}
+/* table */
+th, td {
+	text-align: left;
+    /*overflow: hidden;*/
+	padding: 10px 0;
+}
+#toggle {
+-webkit-touch-callout: none; /* iOS Safari */
+-webkit-user-select: none;   /* Chrome/Safari/Opera */
+-khtml-user-select: none;    /* Konqueror */
+-moz-user-select: none;      /* Firefox */
+-ms-user-select: none;       /* Internet Explorer/Edge */
+user-select: none;           /* Non-prefixed version, currently
+                                not supported by any browser */
+	cursor: pointer; 
+	width: 100%;
+	display: inline;
+	position: fixed;
+	margin: 0;
+	padding: 14px 0 0;
+	height: 30px;
+		z-index: 999999;
+	background-color: rgba(255, 85, 85, 0.29);
+	color: #ffffff;
+	font-weight: bold;
+}
+
+td{
+word-wrap: break-word;
+	font-size: 13px;
+	border-bottom: 1px solid #cdcdcd;
+	text-align: center;
+}
+
+
+.width-variable {
+    overflow: hidden;
+    width: auto;
+    /*background: yellow;*/
+    white-space: wrap;
+
+}
+#id.width-fixed {
+    width: 120px;
+}
+.width-fixed#mentions {
+    width: 120px;
+}
+
+.width-fixed#polarity {
+    width: 70px;
+}
+
+.width-fixed {
+    overflow: hidden;
+    width:90px;
+}
+
+
+tr:hover {
+background-color: #f5f5f5;
+}
 h1, h2, h3, h4, h5, h6, #table th {
   margin-top: 0;
   margin-bottom: 2rem;
-  font-weight: 300; }
+  font-weight: 300; 
+ }
 h1 { font-size: 4.0rem; line-height: 1.2;  letter-spacing: -.1rem;}
 h2 { font-size: 3.6rem; line-height: 1.25; letter-spacing: -.1rem; }
 h3, #table th { font-size: 3.0rem; line-height: 1.3;  letter-spacing: -.1rem; }
-h4 { font-size: 2.4rem; line-height: 1.35; letter-spacing: -.08rem; }
+h4 {
+	line-height: 1.35; letter-spacing: -.08rem;
+	font-size: 2.2em;
+}
 h5 { font-size: 1.8rem; line-height: 1.5;  letter-spacing: -.05rem; }
 h6 { font-size: 1.5rem; line-height: 1.6;  letter-spacing: 0; }
 
