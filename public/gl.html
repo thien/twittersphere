@@ -33,6 +33,7 @@
 		<script src="js/Detector.js"></script>
 		<script src="js/libs/stats.min.js"></script>
 		<script src="js/renderers/CanvasRenderer.js"></script>
+        <script src="js/utils/GeometryUtils.js"></script>
 
 		<script src="js/shaders/ConvolutionShader.js"></script>
 		<script src="js/shaders/CopyShader.js"></script>
@@ -250,6 +251,35 @@
 	        var color, p, vertexIndex;
 
 	        for (var b=0; b<blobs.length; b++) {
+                /*var bbsName = blobs[b].userName;
+
+                var loader = new THREE.FontLoader();
+                loader.load( 'fonts/optimer_regular.typeface.json', function ( font ) {
+
+                    var textGeometry = new THREE.TextGeometry( bbsName, {
+
+                        font: font,
+
+                        size: 50,
+                        height: 10,
+                        curveSegments: 12,
+
+                        bevelThickness: 1,
+                        bevelSize: 1,
+                        bevelEnabled: false
+
+                    });
+
+                    var textMaterial = new THREE.MeshPhongMaterial(
+                        { color: 0xff0000, specular: 0xffffff }
+                    );
+
+                    var mesh = new THREE.Mesh( textGeometry, textMaterial );
+                    mesh.position.set(100, 100, 100);
+
+                    scene.add( mesh );
+
+                });*/
 	            for (var f=0; f<blobs[b].geo.faces.length; f++) {
 	                for (var v=0; v<3; v++) {
 	                    vertexIndex = blobs[b].geo.faces[f][faceIndices[v]];
@@ -257,6 +287,7 @@
 	                    color = getColourFromSentiment(blobs[b].polarity, blobs[b].magnitude);
 	                    //color.setHSL( 0.125 * vertexIndex/blobs[b].geo.vertices.length, 1.0, 0.5 );
 	                    blobs[b].geo.faces[f].vertexColors[v] = color;
+
 	                }
 	            }
 	        }
