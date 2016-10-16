@@ -461,13 +461,13 @@
 	        }
 	        if (polarity < 0) {
 	            r = 1;
-	            g = 1 - (magnitude * 0.01);
-	            b = 0.3 - (0.1 * magnitude);
+	            g = 1 - (magnitude * 0.5);
+	            b = 0.3 - (5 * magnitude);
 	        }
 	        else {
-	            r = 1 - (magnitude * 0.01);
+	            r = 1 - (magnitude * 0.5);
 	            g = 1;
-	            b = 0.3 - (0.1 * magnitude);
+	            b = 0.3 - (5 * magnitude);
 	        }
 	        return { "r": r, "g": g, "b": b };
 	    }
