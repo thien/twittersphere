@@ -2,7 +2,7 @@
     <head>
         <title>CoolProject11</title>
         <script src="/socket.io/socket.io.js"></script>
-        <script src="/three/three.min.js"></script>
+        <script src="/js/three.min.js"></script>
         <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
         <script>
             var socket = io();
@@ -74,7 +74,6 @@
                         for (var r=0; r<allData.length; r++) {
                             if (allData[r].mentions.length > 0) {
                                 for (var m=0; m<allData[r].mentions.length; m++) {
-                                    console.log("mentioning " + allData[r].mentions[m].screen_name)
                                     var toId = findUser(allData[r].mentions[m].screen_name);
                                     if (toId == -1) {
                                         toId = addBlob(allData[r].mentions[m].screen_name);
@@ -112,7 +111,6 @@
     <script>
         socket.emit('interrogate', window.location.pathname.substr(1,window.location.pathname.length-1));
 </script>
-        <script src="js/three.min.js"></script>
         <script src="js/Detector.js"></script>
 	<script src="js/libs/stats.min.js"></script>
 	<script src="js/renderers/CanvasRenderer.js"></script>
@@ -237,7 +235,6 @@
 
         //initWithData();
 	    function init() {
-            console.log("Output");
 	        container = document.getElementById( 'container' );
 	        camera = new THREE.PerspectiveCamera( 20, window.innerWidth / window.innerHeight, 1, 10000 );
 
@@ -330,35 +327,35 @@
 	        var color, p, vertexIndex;
 
 	        for (var b=0; b<blobs.length; b++) {
-                /*var bbsName = blobs[b].userName;
+                var bbsName = blobs[b].userName;
+                var pos = blobs[b].pos;
 
-                var loader = new THREE.FontLoader();
-                loader.load( 'fonts/optimer_regular.typeface.json', function ( font ) {
+                var canvas = document.createElement('canvas');
+                var size = 512; // CHANGED
+                canvas.width = size;
+                canvas.height = size;
+                var context = canvas.getContext('2d');
+                context.fillStyle = '#4400ff'; // CHANGED
+                context.textAlign = 'center';
+                context.font = '24px Arial';
+                context.fillText(bbsName, size / 2, size / 2);
 
-                    var textGeometry = new THREE.TextGeometry( bbsName, {
+                var amap = new THREE.Texture(canvas);
+                amap.needsUpdate = true;
 
-                        font: font,
+                var mat = new THREE.SpriteMaterial({
+                    map: amap,
+                    transparent: false,
+                    //useScreenCoordinates: false,
+                    color: 0xffffff // CHANGED
+                });
 
-                        size: 50,
-                        height: 10,
-                        curveSegments: 12,
+                var sp = new THREE.Sprite(mat);
+                sp.scale.set( 400, 400, 1 ); // CHANGED
+                //sp.position.set(pos[0], pos[1], pos[2]);
+                blobs[b].textSprite = sp;
+                scene.add(sp);
 
-                        bevelThickness: 1,
-                        bevelSize: 1,
-                        bevelEnabled: false
-
-                    });
-
-                    var textMaterial = new THREE.MeshPhongMaterial(
-                        { color: 0xff0000, specular: 0xffffff }
-                    );
-
-                    var mesh = new THREE.Mesh( textGeometry, textMaterial );
-                    mesh.position.set(100, 100, 100);
-
-                    scene.add( mesh );
-
-                });*/
 	            for (var f=0; f<blobs[b].geo.faces.length; f++) {
 	                for (var v=0; v<3; v++) {
 	                    vertexIndex = blobs[b].geo.faces[f][faceIndices[v]];
@@ -509,6 +506,13 @@
                     connections[c].lineObjs[l].geometry.verticesNeedUpdate = true;
                 }
             }
+            for (var b=0; b<blobs.length; b++) {
+                var pos = blobs[b].group.position;
+                //console.log("pos " + pos[0] + " " + pos[1] + " " + pos[2]);
+                blobs[b].textSprite.position.set(pos.x, pos.y, pos.z + 1.2 * blobs[b].radius);
+                //scene.remove(blobs[b].textSprite);
+                //scene.add(blobs[b].textSprite);
+            }
         }
 
         function balanceBlobs() {
@@ -566,7 +570,7 @@
             blobs[0].group.position.z = 0;
             updateEdges();
         }
-        init();
+        //init();
 	</script>
     </body>
 </html>
