@@ -1,3 +1,36 @@
+function toggle() {
+                var button = document.getElementById("toggle");
+                var dataView = document.getElementById("dataView");
+                var visualView = document.getElementById("visualView");
+                if (dataView.style.display == "none") {
+                    dataView.style.display = "block";
+                    visualView.style.display = "none";
+                    button.innerHTML = "Switch to VisualView";
+                } else {
+                    dataView.style.display = "none";
+                    visualView.style.display = "block";
+                    button.innerHTML = "Switch to DataView";
+                    button.onclick=function(){location.reload();};
+                    addBlob(window.location.pathname.substr(1,window.location.pathname.length-1));
+                    for (var r=0; r<allData.length; r++) {
+                        if (allData[r].mentions.length > 0) {
+                            for (var m=0; m<allData[r].mentions.length; m++) {
+                                var toId = findUser(allData[r].mentions[m].screen_name);
+                                if (toId == -1) {
+                                    toId = addBlob(allData[r].mentions[m].screen_name);
+                                }
+                                addTweet(0, toId, allData[r].response.documentSentiment.polarity, allData[r].response.documentSentiment.magnitude);
+                                addTweet(toId, 0, allData[r].response.documentSentiment.polarity, allData[r].response.documentSentiment.magnitude);
+                            }
+                        } else {
+                            addTweet(0, -1, allData[r].response.documentSentiment.polarity, allData[r].response.documentSentiment.magnitude);
+                        }
+                    }
+                    init();
+                    animate();
+                    initWithData();
+                }
+            };
 
 window.addEventListener('DOMMouseScroll', mousewheel, false);
 window.addEventListener('mousewheel', mousewheel, false);

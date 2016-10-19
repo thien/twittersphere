@@ -4,124 +4,29 @@
         <script src="/socket.io/socket.io.js"></script>
         <script src="/js/three.min.js"></script>
         <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-         <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'><link href="style.css" type="text/css" rel="stylesheet">
-        <script>
-	        $( function() {
-	            $( document ).tooltip();
-	          } );
-            var socket = io();
-            var tweets = [];
-            var sentiment = [];
-            var allData = [];
-            socket.on('tweet', function (response) {
-                tweets.push(response);
-            });
-            socket.on('sentiment', function (response) {
-                sentiment.push(response);
-            });
-            socket.on('twitter_user_details', function(response){
-            $('cover-image').css('background-image', 'url(' + response.user.profile_banner_url + ')');
-            $('twitter-profile-pic').css('background-image', 'url(' + response.user.profile_image_url + ')');
-            $('cover-image').css('background-image', 'url("http://img09.deviantart.net/b96e/i/2010/057/c/4/google_cat_xiii_by_tsu84.jpg")');
-            document.getElementById("toggle").innerHTML = "Switch to VisualView";
-                console.log(response.user.profile_banner_url);
-                console.log(response.user.profile_image_url);
-            });
-            function checkStacks() {
-                if (tweets.length > 0 && sentiment.length > 0) {
-                    var found = false;
-                    for (var i = 0; i < tweets.length; i++) {
-                        if (tweets[0].id == sentiment[i].id) {
-                            found = true;
-                            var response = sentiment[i];
-                            response.mentions = tweets[0].entities.user_mentions;
-                            // console.log(response);
-                            allData.push(response);
-                            var tmp = sentiment[0];
-                            sentiment[0] = sentiment[i];
-                            sentiment[i] = tmp;
-                        }
-                    }
-                    if (found && sentiment[0].response && tweets[0]) {
-                        $("#table_data").find('tbody')
-                        .append($('<tr>'))
-                        .append($('<td>').text(tweets[0].id).hide().fadeIn(200))
-                        .append($('<td>').text(tweets[0].text).hide().fadeIn(200))
-                        .append($('<td>').append(listMentions(tweets[0].entities.user_mentions)).hide().fadeIn(200))
-                        .append($('<td>').text(sentiment[0].response.documentSentiment.polarity.toFixed(4)).hide().fadeIn(200))
-                        .append($('<td>').text(sentiment[0].response.documentSentiment.magnitude.toFixed(4)).hide().fadeIn(200))
-                        tweets = tweets.splice(1,tweets.length);
-                        sentiment = sentiment.splice(1,sentiment.length);
-                        //console.log(tweets);
-                    }
-                }
-            }
-            function listMentions(data){
-                var k = [];
-                for (var i = 0; i < data.length; i++){
-                    k.push("<a id='tweetlink' href=\""+data[i].screen_name+"\">"+data[i].screen_name+"</a> ");
-                }
-                return k;
-            }
-            setInterval(checkStacks,100);
-        </script>
+        <link href="style.css" type="text/css" rel="stylesheet">
+        <script src="js/socket_import.js"></script>
     </head>
     <body>
     <div id="controls">
         <a id="toggle" onClick="toggle()">Switch to Visual</a>
-        <script>
-            function toggle() {
-                var button = document.getElementById("toggle");
-                var dataView = document.getElementById("dataView");
-                var visualView = document.getElementById("visualView");
-                if (dataView.style.display == "none") {
-                    dataView.style.display = "block";
-                    visualView.style.display = "none";
-                    button.innerHTML = "Switch to VisualView";
-                } else {
-                    dataView.style.display = "none";
-                    visualView.style.display = "block";
-                    button.innerHTML = "Switch to DataView";
-                    button.onclick=function(){location.reload();};
-                    addBlob(window.location.pathname.substr(1,window.location.pathname.length-1));
-                    for (var r=0; r<allData.length; r++) {
-                        if (allData[r].mentions.length > 0) {
-                            for (var m=0; m<allData[r].mentions.length; m++) {
-                                var toId = findUser(allData[r].mentions[m].screen_name);
-                                if (toId == -1) {
-                                    toId = addBlob(allData[r].mentions[m].screen_name);
-                                }
-                                addTweet(0, toId, allData[r].response.documentSentiment.polarity, allData[r].response.documentSentiment.magnitude);
-                                addTweet(toId, 0, allData[r].response.documentSentiment.polarity, allData[r].response.documentSentiment.magnitude);
-                            }
-                        } else {
-                            addTweet(0, -1, allData[r].response.documentSentiment.polarity, allData[r].response.documentSentiment.magnitude);
-                        }
-                    }
-            	    init();
-            	    animate();
-                    initWithData();
-                }
-            }
-        </script>
     </div>
         <div id="dataView">
         <div id="cover-image"></div>
         <div id="twitter-profile-pic"></div>
             <h1 id="title"></h1>
-            <script>
 
-            document.getElementById("title").innerHTML = '<a href="http://twitter.com/'+window.location.pathname.substr(1,window.location.pathname.length-1)+'">@'+ window.location.pathname.substr(1,window.location.pathname.length-1)+'</a>'</script>
             <p id="user_desc"></p>
+            <!-- <textarea width="500px" id="alpha_goods"></textarea> -->
             <p>Here are all the recent tweets from this user, along with Polarity and Magnitude values.</p>
             <table class="table" id="table_data" width="100%">
                 <tr>
                     <th class="width-fixed" id="id">ID</th>
                     <th class="width-variable" id="tweet">Tweet</th>
                     <th class="width-fixed" id="mentions">Mentions</th>
-                    <th class="width-fixed" id="polarity">Polarity</th>
-                    <th class="width-fixed" id="magnitude">Magnitude</th>
+                    <!-- <th class="width-fixed" id="polarity">Polarity</th> -->
+                    <!-- <th class="width-fixed" id="magnitude">Magnitude</th> -->
+                    <th class="width-fixed" id="score">Score</th>
                 </tr>
             </table>
         </div>
@@ -130,11 +35,11 @@
         </div>
     <script>
         socket.emit('interrogate', window.location.pathname.substr(1,window.location.pathname.length-1));
-</script>
-        <script src="js/Detector.js"></script>
+    </script>
+    <script src="js/Detector.js"></script>
 	<script src="js/libs/stats.min.js"></script>
 	<script src="js/renderers/CanvasRenderer.js"></script>
-        <script src="js/utils/GeometryUtils.js"></script>
+    <script src="js/utils/GeometryUtils.js"></script>
 	<script src="js/shaders/ConvolutionShader.js"></script>
 	<script src="js/shaders/CopyShader.js"></script>
 	<script src="js/shaders/FilmShader.js"></script>
@@ -147,6 +52,6 @@
 	<script src="js/postprocessing/FilmPass.js"></script>
 	<script src="js/postprocessing/UnrealBloomPass.js"></script>
 	<script src="js/planets.js"></script>
-
+    <script src="js/else.js"></script>
     </body>
 </html>

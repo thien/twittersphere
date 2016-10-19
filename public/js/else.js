@@ -1,0 +1,1 @@
+ document.getElementById("title").innerHTML = '<a href="http://twitter.com/'+window.location.pathname.substr(1,window.location.pathname.length-1)+'">@'+ window.location.pathname.substr(1,window.location.pathname.length-1)+'</a>';
