@@ -35,7 +35,7 @@ var language = require('@google-cloud/language')({
 
 //initiate express
 app.use(express.static('public'));
-var port = 8080;
+var port =  process.env.PORT || 3000;
 var twit = new twitter(
     {
         consumer_key: process.env.tw_cs_key,
