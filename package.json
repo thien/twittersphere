@@ -1,14 +1,19 @@
 {
-  "name": "coolproject11",
+  "name": "twittersphere",
   "version": "0.0.1",
   "description": "The coolest project",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines":{
+    "node":"7.1.0",
+    "npm": "3.10.9"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jamjar919/coolproject11.git"
+    "url": "git+https://github.com/tnguyen/twittersphere.git"
   },
   "keywords": [
     "cool",
@@ -26,9 +31,9 @@
   "author": "Team Sudo",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jamjar919/coolproject11/issues"
+    "url": "https://github.com/tnguyen/twittersphere/issues"
   },
-  "homepage": "https://github.com/jamjar919/coolproject11#readme",
+  "homepage": "https://github.com/tnguyen/twittersphere#readme",
   "dependencies": {
     "@google-cloud/language": "^0.3.0",
     "async": "^2.1.1",
