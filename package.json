@@ -35,10 +35,9 @@
   },
   "homepage": "https://github.com/tnguyen/twittersphere#readme",
   "dependencies": {
-    "@google-cloud/language": "^0.3.0",
-    "async": "^2.1.1",
+    "@google-cloud/language": "^0.6.1",
+    "async": "^2.1.2",
     "express": "^4.14.0",
-    "grpc": "^1.0.1",
     "socketio": "^1.0.0",
     "three": "^0.81.2",
     "twitter": "^1.4.0"
