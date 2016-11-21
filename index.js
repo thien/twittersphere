@@ -14,16 +14,37 @@ var instructionsStack = [];
 
 // Language API
 
+var google_api_keys = {
+    {
+  "type": process.env.go_type,
+  "project_id": process.env.go_pr_id,
+  "private_key_id": process.env.go_priv_key_id,
+  "private_key": process.env.go_comp_pr_key,
+  "client_email": process.env.go_cli_email,
+  "client_id": process.env.go_client_id,
+  "auth_uri": process.env.go_auth_uri,
+  "token_uri": process.env.go_tok_uri,
+  "auth_provider_x509_cert_url": process.env.go_auth_provi,
+  "client_x509_cert_url": process.env.go_glient_x509
+}
+
 var language = require('@google-cloud/language')({
   projectId: 'coolproject11-146512',
-  keyFilename: './googlecompute.json'
+  keyFilename: google_api_keys
 });
 
 
 //initiate express
 app.use(express.static('public'));
 var port = 8080;
-var twit = new twitter(st.s());
+var twit = new twitter(
+    {
+        consumer_key: process.env.tw_cs_key,
+        consumer_secret: process.env.tw_cs_sec,
+        access_token_key: process.env.tw_ac_key,
+        access_token_secret: process.env.tw_ac_sec
+    }
+    );
 
 
 //getting tweets and sentiments from a twitter user
