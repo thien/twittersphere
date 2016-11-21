@@ -15,7 +15,6 @@ var instructionsStack = [];
 // Language API
 
 var google_api_keys = {
-    {
   "type": process.env.go_type,
   "project_id": process.env.go_pr_id,
   "private_key_id": process.env.go_priv_key_id,
