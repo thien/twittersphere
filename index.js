@@ -6,7 +6,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var util = require('util');
 var twitter = require('twitter');
-var st = require('./twitter_key.js');
+// var st = require('./twitter_key.js');
 var async = require('async');
 var tweet_query;
 // load necessary variables for system
