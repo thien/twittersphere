@@ -49,8 +49,9 @@ try {
 }
 
 var language = require('@google-cloud/language')({
-  projectId: 'coolproject11-146512',
-  keyFilename: './googlecompute.json' || google_api_keys
+    projectId: 'coolproject11-146512',
+    keyFilename: './googlecompute.json',
+    credentials: google_api_keys
 });
 
 //initiate express
