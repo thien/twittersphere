@@ -32,7 +32,7 @@ try {
         "auth_uri": process.env.go_auth_uri,
         "token_uri": process.env.go_tok_uri,
         "auth_provider_x509_cert_url": process.env.go_auth_provi,
-        "client_x509_cert_url": process.env.go_glient_x509
+        "client_x509_cert_url": process.env.go_client_x509
     }
 }
 
