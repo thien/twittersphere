@@ -71,7 +71,7 @@ function getTweets(user,socket){
                 socket.emit('tweet', tweet);
                 // console.log(tweet.text);
                 language.annotate(tweet.text,function(err,sentiment,apiResponse) {
-                    console.log(apiResponse.documentSentiment);
+                    // console.log(apiResponse.documentSentiment);
                     socket.emit('sentiment', {"id": tweet.id, "response": apiResponse})
                 });
             });

@@ -1,50 +1,52 @@
 function toggle() {
-                var button = document.getElementById("toggle");
-                var dataView = document.getElementById("dataView");
-                var visualView = document.getElementById("visualView");
-                if (dataView.style.display == "none") {
-                    dataView.style.display = "block";
-                    visualView.style.display = "none";
-                    button.innerHTML = "Switch to VisualView";
-                } else {
-                    dataView.style.display = "none";
-                    visualView.style.display = "block";
-                    button.innerHTML = "Switch to DataView";
-                    button.onclick=function(){location.reload();};
-                    addBlob(window.location.pathname.substr(1,window.location.pathname.length-1));
-                    for (var r=0; r<allData.length; r++) {
-                        if (allData[r].mentions.length > 0) {
-                            for (var m=0; m<allData[r].mentions.length; m++) {
-                                var toId = findUser(allData[r].mentions[m].screen_name);
-                                if (toId == -1) {
-                                    toId = addBlob(allData[r].mentions[m].screen_name);
-                                }
-                                addTweet(0, toId, allData[r].response.documentSentiment.polarity, allData[r].response.documentSentiment.magnitude);
-                                addTweet(toId, 0, allData[r].response.documentSentiment.polarity, allData[r].response.documentSentiment.magnitude);
-                            }
-                        } else {
-                            addTweet(0, -1, allData[r].response.documentSentiment.polarity, allData[r].response.documentSentiment.magnitude);
-                        }
+    var button = document.getElementById("toggle");
+    var dataView = document.getElementById("dataView");
+    var visualView = document.getElementById("visualView");
+    if (dataView.style.display == "none") {
+        dataView.style.display = "block";
+        visualView.style.display = "none";
+        button.innerHTML = "Switch to VisualView";
+    } else {
+        dataView.style.display = "none";
+        visualView.style.display = "block";
+        button.innerHTML = "Switch to DataView";
+        button.onclick = function() {
+            location.reload();
+        };
+        addBlob(window.location.pathname.substr(1, window.location.pathname.length - 1));
+        for (var r = 0; r < allData.length; r++) {
+            if (allData[r].mentions.length > 0) {
+                for (var m = 0; m < allData[r].mentions.length; m++) {
+                    var toId = findUser(allData[r].mentions[m].screen_name);
+                    if (toId == -1) {
+                        toId = addBlob(allData[r].mentions[m].screen_name);
                     }
-                    init();
-                    animate();
-                    initWithData();
+                    addTweet(0, toId, allData[r].response.documentSentiment.polarity, allData[r].response.documentSentiment.magnitude);
+                    addTweet(toId, 0, allData[r].response.documentSentiment.polarity, allData[r].response.documentSentiment.magnitude);
                 }
-            };
+            } else {
+                addTweet(0, -1, allData[r].response.documentSentiment.polarity, allData[r].response.documentSentiment.magnitude);
+            }
+        }
+        init();
+        animate();
+        initWithData();
+    }
+};
 
-window.addEventListener('DOMMouseScroll', mousewheel, false);
-window.addEventListener('mousewheel', mousewheel, false);
+// window.addEventListener('DOMMouseScroll', mousewheel, false);
+// window.addEventListener('mousewheel', mousewheel, false);
 
-function mousewheel(event) {
+// function mousewheel(event) {
 
-    var fovMAX = 90;
-    var fovMIN = 1;
+//     var fovMAX = 90;
+//     var fovMIN = 1;
 
-    camera.fov -= event.wheelDeltaY * 0.05;
-    camera.fov = Math.max( Math.min( camera.fov, fovMAX ), fovMIN );
-    camera.projectionMatrix = new THREE.Matrix4().makePerspective(camera.fov, window.innerWidth / window.innerHeight, camera.near, camera.far);
+//     camera.fov -= event.wheelDeltaY * 0.05;
+//     camera.fov = Math.max(Math.min(camera.fov, fovMAX), fovMIN);
+//     camera.projectionMatrix = new THREE.Matrix4().makePerspective(camera.fov, window.innerWidth / window.innerHeight, camera.near, camera.far);
 
-}
+// }
 
 // the initial seed
 Math.seed = 6;
@@ -61,7 +63,7 @@ Math.seededRandom = function(max, min) {
     return min + rnd * (max - min);
 }
 
-if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+if (!Detector.webgl) Detector.addGetWebGLMessage();
 var container, stats;
 var camera, scene, renderer;
 var mesh, group1, group2, group3, light;
@@ -82,14 +84,20 @@ var params = {
 var effectFXAA, bloomPass, renderScene;
 
 function addBlob(userName) {
-    var newUser = { "userName": userName, "pos": [Math.random() * 100, Math.random() * 100, Math.random() * 100],
-                    "radius": 20, "polarity": 0, "magnitude": 0, "tweets": []};
+    var newUser = {
+        "userName": userName,
+        "pos": [Math.random() * 100, Math.random() * 100, Math.random() * 100],
+        "radius": 20,
+        "polarity": 0,
+        "magnitude": 0,
+        "tweets": []
+    };
     blobs.push(newUser);
     return blobs.length - 1;
 }
 
 function findUser(userName) {
-    for ( var u=0; u<blobs.length; u++) {
+    for (var u = 0; u < blobs.length; u++) {
         if (blobs[u].userName === userName) {
             return u;
         }
@@ -98,7 +106,7 @@ function findUser(userName) {
 }
 
 function findTweetPair(fromUser, toUser) {
-    for (var c=0; c<connections.length; c++) {
+    for (var c = 0; c < connections.length; c++) {
         v0 = connections[c].verts[0]
         v1 = connections[c].verts[1]
         if ((v0 == fromUser && v1 == toUser) || (v0 == toUser && v1 == fromUser)) {
@@ -113,17 +121,27 @@ function addTweet(fromUser, toUser, sentiment, magnitude) {
     if (toUser > 0) {
         var tweetID = findTweetPair(fromUser, toUser);
         if (tweetID < 0) {
-            connections.push({"verts": [fromUser, toUser], tweets: [], "lineObjs": []})
+            connections.push({
+                "verts": [fromUser, toUser],
+                tweets: [],
+                "lineObjs": []
+            })
             tweetID = connections.length - 1
         }
-        connections[tweetID].tweets.push({"polarity": sentiment, "magnitude": magnitude})
+        connections[tweetID].tweets.push({
+            "polarity": sentiment,
+            "magnitude": magnitude
+        })
         blobs[fromUser].radius += 2;
     } else {
         var b = blobs[fromUser];
         b.polarity = (b.polarity * b.tweets.length + sentiment) / (b.tweets.length + 1)
         b.magnitude = (b.magnitude * b.tweets.length + magnitude) / (b.tweets.length + 1)
         b.radius += 1;
-        b.tweets.push({"polarity": sentiment, "magnitude": magnitude})
+        b.tweets.push({
+            "polarity": sentiment,
+            "magnitude": magnitude
+        })
     }
 }
 
@@ -152,9 +170,21 @@ var dataInited = false;
 LINE_SEP_FAC = 0.5;
 
 //initWithData();
+
+function mousewheel(event) {
+
+    var fovMAX = 90;
+    var fovMIN = 1;
+
+    camera.fov -= event.wheelDeltaY * 0.05;
+    camera.fov = Math.max(Math.min(camera.fov, fovMAX), fovMIN);
+    camera.projectionMatrix = new THREE.Matrix4().makePerspective(camera.fov, window.innerWidth / window.innerHeight, camera.near, camera.far);
+
+}
+
 function init() {
-    container = document.getElementById( 'container' );
-    camera = new THREE.PerspectiveCamera( 20, window.innerWidth / window.innerHeight, 1, 10000 );
+    container = document.getElementById('container');
+    camera = new THREE.PerspectiveCamera(20, window.innerWidth / window.innerHeight, 1, 10000);
 
     mouse = new THREE.Vector2();
 
@@ -162,21 +192,25 @@ function init() {
     camera.position.z = 1800;
 
     scene = new THREE.Scene();
-    light = new THREE.DirectionalLight( 0xffffff );
-    light.position.set( 0, 0, 1 );
-    scene.add( light );
+    light = new THREE.DirectionalLight(0xffffff);
+    light.position.set(0, 0, 1);
+    scene.add(light);
     // shadow
-    var canvas = document.createElement( 'canvas' );
+    var canvas = document.createElement('canvas');
     canvas.width = 128;
     canvas.height = 128;
 
-    for (var i=0; i<blobs.length; i++) {
+    for (var i = 0; i < blobs.length; i++) {
         blobs[i].geo = new THREE.IcosahedronGeometry(blobs[i].radius, 1);
     }
 
-    var SEPX = 120, AMOUNTX = 100;
-    var SEPY = 120, AMOUNTY = 100;
-    var SEPZ = 240, AMOUNTZ = 20, ZOFFSET = -1200;
+    var SEPX = 120,
+        AMOUNTX = 100;
+    var SEPY = 120,
+        AMOUNTY = 100;
+    var SEPZ = 240,
+        AMOUNTZ = 20,
+        ZOFFSET = -1200;
 
     parent = new THREE.Object3D();
     scene.add(parent);
@@ -184,30 +218,39 @@ function init() {
     geo = new THREE.Geometry();
 
     var i = 0;
-    for ( var ix = 0; ix < AMOUNTX; ix ++ ) {
-        for ( var iy = 0; iy < AMOUNTY; iy ++ ) {
-            for ( var iz = 0; iz < AMOUNTZ; iz++) {
-                var x = ix * SEPX - ( ( AMOUNTX * SEPX ) / 2 );
-                var y = iy * SEPY - ( ( AMOUNTY * SEPY ) / 2 );
-                var z = iz * SEPZ - ( ( AMOUNTZ * SEPZ ) / 2 ) + ZOFFSET;
+    for (var ix = 0; ix < AMOUNTX; ix++) {
+        for (var iy = 0; iy < AMOUNTY; iy++) {
+            for (var iz = 0; iz < AMOUNTZ; iz++) {
+                var x = ix * SEPX - ((AMOUNTX * SEPX) / 2);
+                var y = iy * SEPY - ((AMOUNTY * SEPY) / 2);
+                var z = iz * SEPZ - ((AMOUNTZ * SEPZ) / 2) + ZOFFSET;
                 geo.vertices.push(new THREE.Vector3(x, y, z));
             }
         }
     }
-    mesh = new THREE.Points(geo, new THREE.PointsMaterial( {size: 3, color: {r: 1, g: 0, b: 0}}));
+    mesh = new THREE.Points(geo, new THREE.PointsMaterial({
+        size: 3,
+        color: {
+            r: 1,
+            g: 0,
+            b: 0
+        }
+    }));
     parent.add(mesh);
 
-    scene.fog = new THREE.FogExp2( 0x000000, 0.00045 );
+    scene.fog = new THREE.FogExp2(0x000000, 0.00045);
 
-    renderer = new THREE.WebGLRenderer( { antialias: true } );
-    renderer.setClearColor( scene.fog.color );
-    renderer.setPixelRatio( window.devicePixelRatio );
-    renderer.setSize( window.innerWidth, window.innerHeight );
+    renderer = new THREE.WebGLRenderer({
+        antialias: true
+    });
+    renderer.setClearColor(scene.fog.color);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.autoClear = false;
     renderer.sortObjects = false;
-    container.appendChild( renderer.domElement );
+    container.appendChild(renderer.domElement);
     stats = new Stats();
-    container.appendChild( stats.dom );
+    container.appendChild(stats.dom);
 
     //bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);//1.0, 9, 0.5, 512);
     composer = new THREE.EffectComposer(renderer);
@@ -233,18 +276,20 @@ function init() {
 
     composer.addPass(copyPass);
 
-    document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+    document.addEventListener('mousemove', onDocumentMouseMove, false);
     //
-    window.addEventListener( 'resize', onWindowResize, false );
+    window.addEventListener('resize', onWindowResize, false);
+    window.addEventListener('DOMMouseScroll', mousewheel, false);
+    window.addEventListener('mousewheel', mousewheel, false);
 }
 
 function initWithData() {
     dataInited = true;
 
-    var faceIndices = [ 'a', 'b', 'c' ];
+    var faceIndices = ['a', 'b', 'c'];
     var color, p, vertexIndex;
 
-    for (var b=0; b<blobs.length; b++) {
+    for (var b = 0; b < blobs.length; b++) {
         var bbsName = blobs[b].userName;
         var pos = blobs[b].pos;
 
@@ -269,13 +314,13 @@ function initWithData() {
         });
 
         var sp = new THREE.Sprite(mat);
-        sp.scale.set( 400, 400, 1 ); // CHANGED
+        sp.scale.set(400, 400, 1); // CHANGED
         //sp.position.set(pos[0], pos[1], pos[2]);
         blobs[b].textSprite = sp;
         scene.add(sp);
 
-        for (var f=0; f<blobs[b].geo.faces.length; f++) {
-            for (var v=0; v<3; v++) {
+        for (var f = 0; f < blobs[b].geo.faces.length; f++) {
+            for (var v = 0; v < 3; v++) {
                 vertexIndex = blobs[b].geo.faces[f][faceIndices[v]];
                 p = blobs[b].geo.vertices[vertexIndex];
                 color = getColourFromSentiment(blobs[b].polarity, blobs[b].magnitude);
@@ -286,11 +331,21 @@ function initWithData() {
         }
     }
     var materials = [
-        new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading, vertexColors: THREE.VertexColors, shininess: 0 } ),
-        new THREE.MeshBasicMaterial( { color: 0x000000, shading: THREE.FlatShading, wireframe: true, transparent: true } )
+        new THREE.MeshPhongMaterial({
+            color: 0xffffff,
+            shading: THREE.FlatShading,
+            vertexColors: THREE.VertexColors,
+            shininess: 0
+        }),
+        new THREE.MeshBasicMaterial({
+            color: 0x000000,
+            shading: THREE.FlatShading,
+            wireframe: true,
+            transparent: true
+        })
     ];
 
-    for (var g=0; g<blobs.length; g++) {
+    for (var g = 0; g < blobs.length; g++) {
         group = THREE.SceneUtils.createMultiMaterialObject(blobs[g].geo, materials);
         group.position.x = blobs[g].pos[0];
         group.position.y = blobs[g].pos[1];
@@ -309,7 +364,7 @@ function initWithData() {
             var linesGeo = new THREE.Geometry();
 
             var theta = Math.seededRandom(0, Math.PI * 2);
-            var phi = Math.seededRandom(-Math.PI/2, Math.PI/2);
+            var phi = Math.seededRandom(-Math.PI / 2, Math.PI / 2);
             var radius0 = Math.seededRandom(0, vert0.radius);
             var radius1 = Math.seededRandom(0, vert1.radius);
 
@@ -322,13 +377,24 @@ function initWithData() {
             var z1 = LINE_SEP_FAC * radius1 * Math.sin(theta) * Math.cos(phi) + vert1.group.position.z;
 
             //linesGeo.vertices.push(vert0.group.position);
-            linesGeo.vertices.push({"x": x0, "y": y0, "z": z0});
+            linesGeo.vertices.push({
+                "x": x0,
+                "y": y0,
+                "z": z0
+            });
             //linesGeo.vertices.push(vert1.group.position);
-            linesGeo.vertices.push({ "x": x1, "y": y1, "z": z1 });
+            linesGeo.vertices.push({
+                "x": x1,
+                "y": y1,
+                "z": z1
+            });
             var edgeColor;
             edgeColor = getColourFromSentiment(connections[c].tweets[l].polarity, connections[c].tweets[l].magnitude);
-            var lineObj = new THREE.Line( linesGeo, new THREE.LineBasicMaterial( { color: new THREE.Color(edgeColor.r, edgeColor.g, edgeColor.b), opacity: 1 } ) )
-            scene.add( lineObj );
+            var lineObj = new THREE.Line(linesGeo, new THREE.LineBasicMaterial({
+                color: new THREE.Color(edgeColor.r, edgeColor.g, edgeColor.b),
+                opacity: 1
+            }))
+            scene.add(lineObj);
             connections[c].lineObjs.push(lineObj);
         }
     }
@@ -339,7 +405,7 @@ function onWindowResize() {
     windowHalfY = window.innerHeight / 2;
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize( window.innerWidth, window.innerHeight );
+    renderer.setSize(window.innerWidth, window.innerHeight);
     //composer.setSize( window.innerWidth, window.innerHeight);
     composer.reset();
     /*effectFocus.uniforms[ "screenWidth" ].value = window.innerWidth;
@@ -347,7 +413,7 @@ function onWindowResize() {
     */
 }
 
-function onDocumentMouseMove( event ) {
+function onDocumentMouseMove(event) {
     mouse.x = (event.clientX - windowHalfX);
     mouse.y = (event.clientY - windowHalfY);
 }
@@ -356,19 +422,20 @@ function animate() {
     if (dataInited) {
         balanceBlobs();
     }
-    requestAnimationFrame( animate );
+    requestAnimationFrame(animate);
     render();
     stats.update();
 }
 
 function render() {
-    camera.position.x += ( mouse.x - camera.position.x ) * 0.05;
-    camera.position.y += ( - mouse.y - camera.position.y ) * 0.05;
-    camera.lookAt( scene.position );
+    camera.position.x += (mouse.x - camera.position.x) * 0.05;
+    camera.position.y += (-mouse.y - camera.position.y) * 0.05;
+    camera.lookAt(scene.position);
     //renderer.render( scene, camera );
     renderer.clear();
     composer.render(0.05);
 }
+
 function getColourFromSentiment(polarity, magnitude) {
     //let the limit be +-1. -1 is very bad
     //internal calculations of polarity will be 0-1
@@ -381,30 +448,31 @@ function getColourFromSentiment(polarity, magnitude) {
         r = 1;
         g = 1 - (magnitude * 0.5);
         b = 0.3 - (5 * magnitude);
-    }
-    else {
+    } else {
         r = 1 - (magnitude * 0.5);
         g = 1;
         b = 0.3 - (5 * magnitude);
     }
-    return { "r": r, "g": g, "b": b };
+    return {
+        "r": r,
+        "g": g,
+        "b": b
+    };
 }
 
-
 function updateEdges() {
-    for (var c=0; c<connections.length; c++) {
+    for (var c = 0; c < connections.length; c++) {
         var con = connections[c];
         Math.seed = c;
         var vert0 = blobs[con.verts[0]];
         var vert1 = blobs[con.verts[1]];
 
-        for (var l=0; l<con.tweets.length; l++) {
+        for (var l = 0; l < con.tweets.length; l++) {
 
             var theta = Math.seededRandom(0, Math.PI * 2);
-            var phi = Math.seededRandom(-Math.PI/2, Math.PI/2);
+            var phi = Math.seededRandom(-Math.PI / 2, Math.PI / 2);
             var radius0 = Math.seededRandom(0, vert0.radius);
             var radius1 = Math.seededRandom(0, vert1.radius);
-
 
             var x0 = LINE_SEP_FAC * radius0 * Math.cos(theta) * Math.cos(phi) + vert0.group.position.x;
             var y0 = LINE_SEP_FAC * radius0 * Math.sin(phi) + vert0.group.position.y;
@@ -424,7 +492,7 @@ function updateEdges() {
             connections[c].lineObjs[l].geometry.verticesNeedUpdate = true;
         }
     }
-    for (var b=0; b<blobs.length; b++) {
+    for (var b = 0; b < blobs.length; b++) {
         var pos = blobs[b].group.position;
         //console.log("pos " + pos[0] + " " + pos[1] + " " + pos[2]);
         blobs[b].textSprite.position.set(pos.x, pos.y, pos.z + 1.2 * blobs[b].radius);
@@ -434,9 +502,11 @@ function updateEdges() {
 }
 
 function balanceBlobs() {
-    for ( var bl=1; bl<blobs.length; bl++ ) {
-        var mvX = 0, mvY = 0, mvZ = 0;
-        for ( var away=0; away<blobs.length; away++ ) {
+    for (var bl = 1; bl < blobs.length; bl++) {
+        var mvX = 0,
+            mvY = 0,
+            mvZ = 0;
+        for (var away = 0; away < blobs.length; away++) {
             var a = blobs[bl].group.position;
             var b = blobs[away].group.position;
             var dist = Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2) + Math.pow(a.z - b.z, 2))
@@ -450,12 +520,12 @@ function balanceBlobs() {
                     mvY += ((a.y - b.y) / dist) * (aRad + bRad) * 0.5;
                     mvZ += ((a.z - b.z) / dist) * (aRad + bRad) * 0.5;
                 } else {
-                    mvX += ((a.x - b.x) / dist) * (aRad + bRad) * 0.5 * (1/dist);
-                    mvY += ((a.y - b.y) / dist) * (aRad + bRad) * 0.5 * (1/dist);
-                    mvZ += ((a.z - b.z) / dist) * (aRad + bRad) * 0.5 * (1/dist);
+                    mvX += ((a.x - b.x) / dist) * (aRad + bRad) * 0.5 * (1 / dist);
+                    mvY += ((a.y - b.y) / dist) * (aRad + bRad) * 0.5 * (1 / dist);
+                    mvZ += ((a.z - b.z) / dist) * (aRad + bRad) * 0.5 * (1 / dist);
                 }
             }
-            if (away+1 == bl) {
+            if (away + 1 == bl) {
                 away++;
             }
         }
@@ -463,7 +533,7 @@ function balanceBlobs() {
         blobs[bl].group.position.y += mvY;
         blobs[bl].group.position.z += mvZ;
     }
-    for ( var c=0; c<connections.length; c++ ) {
+    for (var c = 0; c < connections.length; c++) {
         var aBlob = blobs[connections[c].verts[0]];
         var bBlob = blobs[connections[c].verts[1]];
         var a = aBlob.group.position;

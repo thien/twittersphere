@@ -1,6 +1,6 @@
-$( function() {
-    $( document ).tooltip();
-  } );
+// $( function() {
+//     $( document ).tooltip();
+//   } );
 var socket = io();
 var tweets = [];
 var sentiment = [];
@@ -18,8 +18,8 @@ socket.on('twitter_user_details', function(response){
 // $('cover-image').css('background-image', 'url(' + response.user.profile_banner_url + ')');
     document.getElementById("cover-image").style.backgroundImage = "url('"+ response.user.profile_banner_url+"')";
     document.getElementById("twitter-profile-pic").style.backgroundImage = "url('"+ response.user.profile_image_url+"')";
-    document.getElementById("alpha_goods").innerHTML = JSON.stringify(response, null, "\t");
-    document.getElementById("alpha_goods").innerHTML.appendChild = JSON.stringify(response, null, "\t");
+    // document.getElementById("alpha_goods").innerHTML = JSON.stringify(response, null, "\t");
+    // document.getElementById("alpha_goods").innerHTML.appendChild = JSON.stringify(response, null, "\t");
     document.getElementById("user_desc").innerHTML = '"'+response.user.description+'"';
     document.getElementById("toggle").innerHTML = "Switch to VisualView (" + loads +")";
     console.log(response.user.profile_banner_url);
