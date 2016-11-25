@@ -12,23 +12,31 @@ var tweet_query;
 // load necessary variables for system
 var instructionsStack = [];
 
-// Language API
-
-var google_api_keys = {
-    "type": process.env.go_type,
-    "project_id": process.env.go_pr_id,
-    "private_key_id": process.env.go_priv_key_id,
-    "private_key": process.env.go_comp_pr_key,
-    "client_email": process.env.go_cli_email,
-    "client_id": process.env.go_client_id,
-    "auth_uri": process.env.go_auth_uri,
-    "token_uri": process.env.go_tok_uri,
-    "auth_provider_x509_cert_url": process.env.go_auth_provi,
-    "client_x509_cert_url": process.env.go_glient_x509
-}
-
+// keys
+var google_api_keys = {};
 var twi = {};
 
+// google
+try {
+  google_api_keys = JSON.parse(fs.readFileSync('googlecompute.json', 'utf8'));
+} catch (err) {
+    // secret file isn't found.
+    console.log(err);
+    google_api_keys = {
+        "type": process.env.go_type,
+        "project_id": process.env.go_pr_id,
+        "private_key_id": process.env.go_priv_key_id,
+        "private_key": process.env.go_comp_pr_key,
+        "client_email": process.env.go_cli_email,
+        "client_id": process.env.go_client_id,
+        "auth_uri": process.env.go_auth_uri,
+        "token_uri": process.env.go_tok_uri,
+        "auth_provider_x509_cert_url": process.env.go_auth_provi,
+        "client_x509_cert_url": process.env.go_glient_x509
+    }
+}
+
+// twitter
 try {
   var k = JSON.parse(fs.readFileSync('twitter_key.json', 'utf8'));
   twi = {
@@ -50,7 +58,6 @@ try {
 
 var language = require('@google-cloud/language')({
     projectId: 'coolproject11-146512',
-    keyFilename: './googlecompute.json',
     credentials: google_api_keys
 });
 
