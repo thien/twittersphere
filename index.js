@@ -36,6 +36,8 @@ try {
     }
 }
 
+console.log(google_api_keys);
+
 // twitter
 try {
   var k = JSON.parse(fs.readFileSync('twitter_key.json', 'utf8'));
