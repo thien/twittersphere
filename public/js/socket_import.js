@@ -43,7 +43,7 @@ function checkStacks() {
         if (found && sentiment[0].response && tweets[0]) {
             loads = loads + 1;
             document.getElementById("toggle").innerHTML = "Switch to VisualView (" + loads +")";
-            var score0 = sentiment[0].response.documentSentiment.polarity * sentiment[0].response.documentSentiment.magnitude*10;
+            var score0 = sentiment[0].response.documentSentiment.score * sentiment[0].response.documentSentiment.magnitude*10;
             var tweetlink = "http://twitter.com/"+tweets[0].user.screen_name+"/status/"+tweets[0].id_str;
             var html_tweetlink = '<a href="'+tweetlink+'">link</a>';
             $("#table_data").find('tbody')
