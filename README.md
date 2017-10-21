@@ -1,6 +1,6 @@
 # coolproject11
 
-![HackSheffield](https://github.com/jamjar919/coolproject11/raw/master/HackSheffield.png)
+![HackSheffield](https://github.com/thien/twittersphere/raw/master/screen.png)
 
 Hack Sheffield v2 hackathon project entry;
 The coolest project in the world.
