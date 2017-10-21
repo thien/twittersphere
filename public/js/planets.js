@@ -298,7 +298,7 @@ function initWithData() {
         canvas.width = size;
         canvas.height = size;
         var context = canvas.getContext('2d');
-        context.fillStyle = '#4400ff'; // CHANGED
+        context.fillStyle = '#62B1F6'; // CHANGED
         context.textAlign = 'center';
         context.font = '24px Arial';
         context.fillText(bbsName, size / 2, size / 2);
