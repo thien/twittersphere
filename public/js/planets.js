@@ -21,11 +21,11 @@ function toggle() {
                     if (toId == -1) {
                         toId = addBlob(allData[r].mentions[m].screen_name);
                     }
-                    addTweet(0, toId, allData[r].response.documentSentiment.polarity, allData[r].response.documentSentiment.magnitude);
-                    addTweet(toId, 0, allData[r].response.documentSentiment.polarity, allData[r].response.documentSentiment.magnitude);
+                    addTweet(0, toId, allData[r].response.score, allData[r].response.comparative);
+                    addTweet(toId, 0, allData[r].response.score, allData[r].response.comparative);
                 }
             } else {
-                addTweet(0, -1, allData[r].response.documentSentiment.polarity, allData[r].response.documentSentiment.magnitude);
+                addTweet(0, -1, allData[r].response.score, allData[r].response.comparative);
             }
         }
         init();

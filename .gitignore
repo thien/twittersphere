@@ -3,3 +3,5 @@ googlecompute.json
 twitter_key.js
 *.log
 twitter_key.json
+package-lock.json
+public/.DS_Store

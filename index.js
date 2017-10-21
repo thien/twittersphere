@@ -8,33 +8,13 @@ var io = require('socket.io')(http);
 var util = require('util');
 var twitter = require('twitter');
 var async = require('async');
+var sentiment = require('sentiment');
 var tweet_query;
 // load necessary variables for system
 var instructionsStack = [];
 
 // keys
-var google_api_keys = {};
 var twi = {};
-
-// google
-try {
-  google_api_keys = JSON.parse(fs.readFileSync('googlecompute.json', 'utf8'));
-} catch (err) {
-    // secret file isn't found.
-    console.log(err);
-    google_api_keys = {
-        "type": process.env.go_type,
-        "project_id": process.env.go_pr_id,
-        "private_key_id": process.env.go_priv_key_id,
-        "private_key": process.env.go_comp_pr_key,
-        "client_email": process.env.go_cli_email,
-        "client_id": process.env.go_client_id,
-        "auth_uri": process.env.go_auth_uri,
-        "token_uri": process.env.go_tok_uri,
-        "auth_provider_x509_cert_url": process.env.go_auth_provi,
-        "client_x509_cert_url": process.env.go_glient_x509
-    }
-}
 
 // twitter
 try {
@@ -56,10 +36,7 @@ try {
     }
 }
 
-var language = require('@google-cloud/language')({
-    projectId: 'coolproject11-146512',
-    credentials: google_api_keys
-});
+
 
 //initiate express
 app.use(express.static('public'));
@@ -78,20 +55,9 @@ function getTweets(user,socket){
             async.each(tweets,function(tweet) {
                 socket.emit('tweet', tweet);
                 // console.log(tweet.text);
-                language.annotate(tweet.text,function(err,sentiment,apiResponse) {
-                    // console.log(apiResponse.documentSentiment);
-                    socket.emit('sentiment', {"id": tweet.id, "response": apiResponse})
-                });
+                var r1 = sentiment(tweet.text);
+                socket.emit('sentiment', {"id": tweet.id, "response": r1});
             });
-            // return tweet_texts;
-            /*for (var i = 0; i < tweets.length; i++) {
-                var tweet = tweets[i].text;
-                var id = tweets[i].id;
-                socket.emit('tweet', {"id": id, "text": tweets[i].text})
-                language.annotate(tweets[i].text,options,function(err,sentiment,apiResponse) {
-                    socket.emit('sentiment', {"id": id, "response": apiResponse})
-                });
-            }*/
         } else {
             console.log(error);
         }

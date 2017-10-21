@@ -1,27 +1,27 @@
 <html>
 <head>
 <script src="/socket.io/socket.io.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
 <link href="style.css" type="text/css" rel="stylesheet">
- <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
 </head>
 <body>
 <div id="formHolder">
-    <h1>CoolProject11</h1>
-    <p>This is the cool project</p>
-    <label>@<input id="input" type="text" placeholder="username"></label>
+    <h1>twittersphere</h1>
+    <p>Generates relationship spheres between a twitter user and their mentions.</p>
+    <label>@<input id="input" type="text" placeholder="Twitter Handle"></label>
     <button onClick="pass()">Analyse</button>
 </div>
 <script>
     function pass() {
         document.location = document.getElementById("input").value;
     }
-    var form = document.getElementById("formHolder");
-    form.style.opacity = "0";
-    form.style.marginTop = "100vh";
-    setTimeout(function() {
-        form.style.opacity = "1";
-        form.style.marginTop = "30vh";
-    },200);
+    // var form = document.getElementById("formHolder");
+    // form.style.opacity = "0";
+    // form.style.marginTop = "100vh";
+    // setTimeout(function() {
+    //     form.style.opacity = "1";
+    //     form.style.marginTop = "30vh";
+    // },200);
 </script>
 </body>
 </html>
