@@ -1,13 +1,5 @@
-# coolproject11
+# Twittersphere
 
-![HackSheffield](https://github.com/thien/twittersphere/raw/master/screen.png)
+![Screen](https://github.com/thien/twittersphere/raw/master/screen.png)
 
-Hack Sheffield v2 hackathon project entry;
-The coolest project in the world.
-So we have no idea what to do.
-
-#REPO BY
-	**Main man j dog**
-	**clickygame tn**
-	**peter pete peter**
-	**cameron the guy on windows**
+Twittersphere is a short hackathon project submission for Hacksheffield 2.0. It analyses a twitter user's mentions against who they have tweeted, and using natural language processing we're able to analyse the sentiment of the tweet. From here the tweets are graded and used as a colour reference for the planet rendering, where green represents a good relationship.
